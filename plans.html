@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GYM | Workout Plans</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            <a href="dashboard.html">GYM</a>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+
+            <a href="plans.html" class="active">
+                Workout Plans
+            </a>
+
+            <a href="workout.html">
+                Log Workout
+            </a>
+
+            <a href="history.html">
+                History
+            </a>
+
+            <a href="progress.html">
+                Progress
+            </a>
+
+            <button
+                id="logoutButton"
+                class="logout-btn"
+                type="button"
+            >
+                Logout
+            </button>
+        </nav>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="plans-page">
+
+
+        <!-- =========================
+             PAGE HEADER
+        ========================== -->
+
+        <section class="page-header">
+
+            <div>
+
+                <p class="page-label">
+                    TRAINING
+                </p>
+
+                <h1>
+                    Workout Plans
+                </h1>
+
+                <p>
+                    Create, manage and follow your
+                    personalized workout plans.
+                </p>
+
+            </div>
+
+
+            <button
+                id="createPlanButton"
+                class="btn primary-btn"
+                type="button"
+            >
+                + Create Plan
+            </button>
+
+        </section>
+
+
+
+        <!-- =========================
+             CREATE PLAN FORM
+        ========================== -->
+
+        <section
+            id="planFormSection"
+            class="form-card hidden"
+        >
+
+            <div class="card-header">
+
+                <div>
+
+                    <p class="card-label">
+                        NEW PLAN
+                    </p>
+
+                    <h2>
+                        Create Workout Plan
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="closePlanForm"
+                    class="close-btn"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+
+            <form id="planForm">
+
+
+                <!-- PLAN NAME -->
+
+                <div class="form-group">
+
+                    <label for="planName">
+                        Plan Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="planName"
+                        name="planName"
+                        placeholder="Example: Push Pull Legs"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label for="planDescription">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="planDescription"
+                        name="planDescription"
+                        placeholder="Describe your workout plan..."
+                        rows="4"
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- GOAL -->
+
+                <div class="form-group">
+
+                    <label for="planGoal">
+                        Goal
+                    </label>
+
+                    <select
+                        id="planGoal"
+                        name="planGoal"
+                    >
+
+                        <option value="strength">
+                            Strength
+                        </option>
+
+                        <option value="muscle">
+                            Muscle Building
+                        </option>
+
+                        <option value="weight_loss">
+                            Weight Loss
+                        </option>
+
+                        <option value="fitness">
+                            General Fitness
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- MESSAGE -->
+
+                <p
+                    id="planMessage"
+                    class="form-message"
+                ></p>
+
+
+
+                <!-- FORM BUTTONS -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="cancelPlanButton"
+                        class="btn secondary-btn"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn primary-btn"
+                    >
+                        Save Plan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+
+        <!-- =========================
+             MY WORKOUT PLANS
+        ========================== -->
+
+        <section class="plans-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="section-label">
+                        YOUR PLANS
+                    </p>
+
+                    <h2>
+                        My Workout Plans
+                    </h2>
+
+                </div>
+
+
+                <span id="planCount">
+                    0 Plans
+                </span>
+
+            </div>
+
+
+
+            <!-- PLANS WILL APPEAR HERE -->
+
+            <div
+                id="plansContainer"
+                class="plans-grid"
+            >
+
+                <!--
+                    Empty state.
+                    plans.js will replace this
+                    when plans are available.
+                -->
+
+                <div
+                    id="emptyPlans"
+                    class="empty-state"
+                >
+
+                    <div class="empty-icon">
+                        +
+                    </div>
+
+
+                    <h3>
+                        No workout plans yet
+                    </h3>
+
+
+                    <p>
+                        Create your first workout plan
+                        to get started.
+                    </p>
+
+
+                    <button
+                        type="button"
+                        id="emptyCreatePlanButton"
+                        class="btn primary-btn"
+                    >
+                        Create Your First Plan
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             INFORMATION CARD
+        ========================== -->
+
+        <section class="info-card">
+
+            <div class="info-content">
+
+                <p class="card-label">
+                    BUILD YOUR ROUTINE
+                </p>
+
+
+                <h2>
+                    A good plan makes
+                    <span>progress easier.</span>
+                </h2>
+
+
+                <p>
+                    Organize your exercises into
+                    structured plans, track every workout,
+                    and use your progress data to improve
+                    your training.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <p>
+            &copy; 2026 GYM. All rights reserved.
+        </p>
+
+    </footer>
+
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script src="js/plans.js"></script>
+
+</body>
+
+</html>

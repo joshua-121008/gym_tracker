@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gym | Progress</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            GYM
+        </div>
+
+        <nav class="nav-links">
+
+            <a href="dashboard.html">Dashboard</a>
+
+            <a href="plans.html">Plans</a>
+
+            <a href="program.html">Programs</a>
+
+            <a href="workout.html">Workout</a>
+
+            <a href="history.html">History</a>
+
+            <a href="progress.html" class="active">Progress</a>
+
+        </nav>
+
+        <button id="logoutButton" class="logout-button">
+            Logout
+        </button>
+
+    </header>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="page-container">
+
+        <!-- PAGE HEADER -->
+
+        <section class="page-header">
+
+            <div>
+
+                <h1>Progress</h1>
+
+                <p>
+                    Track your strength and workout progress over time.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PROGRESS CONTROLS ================= -->
+
+        <section class="progress-controls">
+
+            <div class="form-group">
+
+                <label for="progressExercise">
+                    Select Exercise
+                </label>
+
+                <select id="progressExercise">
+
+                    <option value="">
+                        Select an exercise
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="progressPeriod">
+                    Time Period
+                </label>
+
+                <select id="progressPeriod">
+
+                    <option value="all">
+                        All Time
+                    </option>
+
+                    <option value="30">
+                        Last 30 Days
+                    </option>
+
+                    <option value="90">
+                        Last 90 Days
+                    </option>
+
+                    <option value="180">
+                        Last 6 Months
+                    </option>
+
+                    <option value="365">
+                        Last Year
+                    </option>
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= CHART ================= -->
+
+        <section class="progress-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>Weight Progression</h2>
+
+                    <p>
+                        Maximum weight lifted for each workout.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-container">
+
+                <canvas id="progressChart"></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PROGRESS SUMMARY ================= -->
+
+        <section class="progress-summary-section">
+
+            <h2>Progress Summary</h2>
+
+            <div id="progressSummary" class="progress-summary">
+
+                <div class="empty-state">
+
+                    <h3>Select an exercise</h3>
+
+                    <p>
+                        Choose an exercise above to view your progress.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PROGRESS TIPS ================= -->
+
+        <section class="progress-info">
+
+            <div class="feature-card">
+
+                <h3>📈 Progressive Overload</h3>
+
+                <p>
+                    Gradually increase the weight, repetitions,
+                    or sets over time to continue improving.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <h3>🎯 Stay Consistent</h3>
+
+                <p>
+                    Consistency is more important than lifting
+                    heavy weights occasionally.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <h3>💪 Track Your Strength</h3>
+
+                <p>
+                    Use your workout history to understand how
+                    your strength changes over time.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        <p>
+            © <span id="year"></span> Gym Tracker. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script src="js/main.js"></script>
+
+    <script src="js/progress.js"></script>
+
+</body>
+</html>

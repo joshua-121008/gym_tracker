@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gym | Workout History</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo">
+            <a href="dashboard.html">GYM</a>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="plans.html">Workout Plans</a>
+            <a href="workout.html">Log Workout</a>
+            <a href="history.html" class="active">History</a>
+            <a href="progress.html">Progress</a>
+            <button id="logoutButton" class="logout-btn">Logout</button>
+        </nav>
+
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="history-page">
+
+        <!-- Page Header -->
+        <section class="page-header">
+
+            <div>
+                <p class="page-label">YOUR TRAINING</p>
+
+                <h1>Workout History</h1>
+
+                <p>
+                    Review your previous workouts and track
+                    your training consistency.
+                </p>
+            </div>
+
+            <a
+                href="workout.html"
+                class="btn primary-btn"
+            >
+                + Log Workout
+            </a>
+
+        </section>
+
+
+        <!-- History Statistics -->
+        <section class="stats-grid">
+
+            <!-- Total Workouts -->
+            <article class="stat-card">
+
+                <p>Total Workouts</p>
+
+                <h2 id="historyTotalWorkouts">
+                    0
+                </h2>
+
+                <span>
+                    Completed workouts
+                </span>
+
+            </article>
+
+
+            <!-- Total Exercises -->
+            <article class="stat-card">
+
+                <p>Total Exercises</p>
+
+                <h2 id="historyTotalExercises">
+                    0
+                </h2>
+
+                <span>
+                    Exercises performed
+                </span>
+
+            </article>
+
+
+            <!-- Total Sets -->
+            <article class="stat-card">
+
+                <p>Total Sets</p>
+
+                <h2 id="historyTotalSets">
+                    0
+                </h2>
+
+                <span>
+                    Sets completed
+                </span>
+
+            </article>
+
+
+            <!-- Total Weight -->
+            <article class="stat-card">
+
+                <p>Total Weight</p>
+
+                <h2 id="historyTotalWeight">
+                    0 kg
+                </h2>
+
+                <span>
+                    Weight lifted
+                </span>
+
+            </article>
+
+        </section>
+
+
+        <!-- Filters -->
+        <section class="filter-card">
+
+            <div class="filter-header">
+
+                <div>
+                    <p class="card-label">FILTER</p>
+
+                    <h2>Find a Workout</h2>
+                </div>
+
+                <button
+                    type="button"
+                    id="clearFiltersButton"
+                    class="btn secondary-btn"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="filter-grid">
+
+                <!-- Search -->
+                <div class="form-group">
+
+                    <label for="searchWorkout">
+                        Search
+                    </label>
+
+                    <input
+                        type="text"
+                        id="searchWorkout"
+                        placeholder="Search workout..."
+                    >
+
+                </div>
+
+
+                <!-- Date -->
+                <div class="form-group">
+
+                    <label for="filterDate">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="filterDate"
+                    >
+
+                </div>
+
+
+                <!-- Exercise -->
+                <div class="form-group">
+
+                    <label for="filterExercise">
+                        Exercise
+                    </label>
+
+                    <select id="filterExercise">
+
+                        <option value="">
+                            All Exercises
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Workout History -->
+        <section class="history-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="section-label">
+                        TRAINING LOG
+                    </p>
+
+                    <h2>Previous Workouts</h2>
+                </div>
+
+                <span id="workoutCount">
+                    0 Workouts
+                </span>
+
+            </div>
+
+
+            <!-- Workout List -->
+            <div
+                id="historyContainer"
+                class="history-list"
+            >
+
+                <!-- Workout history will be inserted here by JavaScript -->
+
+                <div
+                    id="emptyHistory"
+                    class="empty-state"
+                >
+
+                    <div class="empty-icon">
+                        +
+                    </div>
+
+                    <h3>No workouts recorded</h3>
+
+                    <p>
+                        Your completed workouts will appear
+                        here once you start logging them.
+                    </p>
+
+                    <a
+                        href="workout.html"
+                        class="btn primary-btn"
+                    >
+                        Log Your First Workout
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Workout Details Modal -->
+        <div
+            id="workoutModal"
+            class="modal hidden"
+        >
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <div>
+                        <p class="card-label">
+                            WORKOUT DETAILS
+                        </p>
+
+                        <h2 id="modalWorkoutName">
+                            Workout
+                        </h2>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="closeWorkoutModal"
+                        class="close-btn"
+                    >
+                        &times;
+                    </button>
+
+                </div>
+
+
+                <!-- Workout Information -->
+                <div class="modal-info">
+
+                    <div>
+                        <span>Date</span>
+                        <strong id="modalWorkoutDate">
+                            -
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Duration</span>
+                        <strong id="modalWorkoutDuration">
+                            -
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <!-- Exercises -->
+                <div class="modal-exercises">
+
+                    <h3>Exercises</h3>
+
+                    <div id="modalExerciseList">
+
+                        <!-- Exercise details loaded by JavaScript -->
+
+                    </div>
+
+                </div>
+
+
+                <!-- Notes -->
+                <div class="modal-notes">
+
+                    <h3>Notes</h3>
+
+                    <p id="modalWorkoutNotes">
+                        No notes available.
+                    </p>
+
+                </div>
+
+
+                <!-- Delete Workout -->
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="deleteWorkoutButton"
+                        class="delete-btn"
+                    >
+                        Delete Workout
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Information -->
+        <section class="info-card">
+
+            <div class="info-content">
+
+                <p class="card-label">
+                    YOUR PROGRESS
+                </p>
+
+                <h2>
+                    Every workout
+                    <span>tells a story.</span>
+                </h2>
+
+                <p>
+                    Keep your training history organized and use
+                    your previous workouts to make smarter decisions
+                    about your future training.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            &copy; 2026 GYM. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- History JavaScript -->
+   
+    <script src="js/history.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gym | Dashboard</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo">
+            <a href="dashboard.html">GYM</a>
+        </div>
+
+        <nav>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="plans.html">Workout Plans</a>
+            <a href="workout.html">Log Workout</a>
+            <a href="history.html">History</a>
+            <a href="progress.html">Progress</a>
+            <button id="logoutButton" class="logout-btn">Logout</button>
+        </nav>
+
+    </header>
+
+
+    <!-- Dashboard -->
+    <main class="dashboard">
+
+        <!-- Welcome Section -->
+        <section class="dashboard-header">
+
+            <div>
+                <p class="dashboard-label">YOUR DASHBOARD</p>
+
+                <h1>
+                    Welcome back,
+                    <span id="username">User</span>
+                </h1>
+
+                <p>
+                    Keep training, keep improving, and keep tracking
+                    your progress.
+                </p>
+            </div>
+
+            <a href="workout.html" class="btn primary-btn">
+                + Log Workout
+            </a>
+
+        </section>
+
+
+        <!-- Statistics -->
+        <section class="stats-grid">
+
+            <!-- Total Workouts -->
+            <article class="stat-card">
+
+                <p>Total Workouts</p>
+
+                <h2 id="totalWorkouts">
+                    0
+                </h2>
+
+                <span>
+                    Workouts completed
+                </span>
+
+            </article>
+
+
+            <!-- This Week -->
+            <article class="stat-card">
+
+                <p>This Week</p>
+
+                <h2 id="weeklyWorkouts">
+                    0
+                </h2>
+
+                <span>
+                    Workouts this week
+                </span>
+
+            </article>
+
+
+            <!-- Exercises -->
+            <article class="stat-card">
+
+                <p>Exercises</p>
+
+                <h2 id="totalExercises">
+                    0
+                </h2>
+
+                <span>
+                    Exercises performed
+                </span>
+
+            </article>
+
+
+            <!-- Weight Lifted -->
+            <article class="stat-card">
+
+                <p>Total Weight</p>
+
+                <h2 id="totalWeight">
+                    0 kg
+                </h2>
+
+                <span>
+                    Weight lifted
+                </span>
+
+            </article>
+
+        </section>
+
+
+        <!-- Main Dashboard Content -->
+        <section class="dashboard-grid">
+
+            <!-- Recent Workouts -->
+            <div class="dashboard-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <p class="card-label">ACTIVITY</p>
+
+                        <h2>Recent Workouts</h2>
+                    </div>
+
+                    <a href="history.html">
+                        View All
+                    </a>
+
+                </div>
+
+
+                <div id="recentWorkouts" class="workout-list">
+
+                    <!-- Workout items will be loaded by JavaScript -->
+
+                    <div class="empty-state">
+
+                        <h3>No workouts yet</h3>
+
+                        <p>
+                            Start your first workout and it
+                            will appear here.
+                        </p>
+
+                        <a href="workout.html" class="btn primary-btn">
+                            Start Workout
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <p class="card-label">QUICK ACTIONS</p>
+
+                        <h2>Get Started</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <a href="plans.html" class="action-card">
+
+                        <span class="action-number">
+                            01
+                        </span>
+
+                        <div>
+                            <h3>Workout Plans</h3>
+
+                            <p>
+                                Create or manage your training plans.
+                            </p>
+                        </div>
+
+                    </a>
+
+
+                    <a href="workout.html" class="action-card">
+
+                        <span class="action-number">
+                            02
+                        </span>
+
+                        <div>
+                            <h3>Log Workout</h3>
+
+                            <p>
+                                Record today's exercises, sets and reps.
+                            </p>
+                        </div>
+
+                    </a>
+
+
+                    <a href="progress.html" class="action-card">
+
+                        <span class="action-number">
+                            03
+                        </span>
+
+                        <div>
+                            <h3>View Progress</h3>
+
+                            <p>
+                                See how your strength has improved.
+                            </p>
+                        </div>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Today's Motivation -->
+        <section class="motivation-card">
+
+            <div>
+
+                <p class="card-label">
+                    KEEP GOING
+                </p>
+
+                <h2>
+                    Progress is built
+                    <span>one workout at a time.</span>
+                </h2>
+
+                <p>
+                    Stay consistent, track your performance,
+                    and become stronger every day.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            &copy; 2026 GYM. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- Dashboard JavaScript -->
+    <script src="js/dashboard.js"></script>
+
+</body>
+</html>
+

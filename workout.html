@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gym | Log Workout</title>
+
+    <!-- Main CSS -->
+   <link rel="stylesheet" href="style.css">
+</head>`
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="logo">
+            <a href="dashboard.html">GYM</a>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="plans.html">Workout Plans</a>
+            <a href="workout.html" class="active">Log Workout</a>
+            <a href="history.html">History</a>
+            <a href="progress.html">Progress</a>
+            <button id="logoutButton" class="logout-btn">Logout</button>
+        </nav>
+
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="workout-page">
+
+        <!-- Page Header -->
+        <section class="page-header">
+
+            <div>
+                <p class="page-label">TRAINING LOG</p>
+
+                <h1>Log Workout</h1>
+
+                <p>
+                    Record your exercises, sets, reps and weight.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- Workout Information -->
+        <section class="workout-info-card">
+
+            <div class="card-header">
+
+                <div>
+                    <p class="card-label">WORKOUT DETAILS</p>
+
+                    <h2>Start Your Workout</h2>
+                </div>
+
+            </div>
+
+
+            <form id="workoutForm">
+
+                <!-- Workout Date -->
+                <div class="form-group">
+
+                    <label for="workoutDate">
+                        Workout Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="workoutDate"
+                        name="workoutDate"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Workout Plan -->
+                <div class="form-group">
+
+                    <label for="workoutPlan">
+                        Workout Plan
+                    </label>
+
+                    <select
+                        id="workoutPlan"
+                        name="workoutPlan"
+                        required
+                    >
+                        <option value="">
+                            Select a workout plan
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- Workout Name -->
+                <div class="form-group">
+
+                    <label for="workoutName">
+                        Workout Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="workoutName"
+                        name="workoutName"
+                        placeholder="Example: Chest & Triceps"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Exercises -->
+                <div class="exercise-section">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <p class="section-label">
+                                EXERCISES
+                            </p>
+
+                            <h2>
+                                Today's Exercises
+                            </h2>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="addExerciseButton"
+                            class="btn secondary-btn"
+                        >
+                            + Add Exercise
+                        </button>
+
+                    </div>
+
+
+                    <!-- Exercise List -->
+                    <div id="exerciseList">
+
+                        <!-- Exercise will be added by JavaScript -->
+
+                        <div
+                            class="exercise-card"
+                            data-exercise-index="0"
+                        >
+
+                            <div class="exercise-header">
+
+                                <div>
+                                    <span class="exercise-number">
+                                        01
+                                    </span>
+
+                                    <h3>
+                                        Exercise 1
+                                    </h3>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="remove-exercise"
+                                    aria-label="Remove exercise"
+                                >
+                                    &times;
+                                </button>
+
+                            </div>
+
+
+                            <!-- Exercise Name -->
+                            <div class="form-group">
+
+                                <label>
+                                    Exercise Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="exercise-name"
+                                    placeholder="Example: Bench Press"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- Sets -->
+                            <div class="sets-container">
+
+                                <div class="sets-header">
+
+                                    <h4>Sets</h4>
+
+                                    <button
+                                        type="button"
+                                        class="add-set-button"
+                                    >
+                                        + Add Set
+                                    </button>
+
+                                </div>
+
+
+                                <div class="set-list">
+
+                                    <!-- Set 1 -->
+                                    <div class="set-row">
+
+                                        <span class="set-number">
+                                            1
+                                        </span>
+
+                                        <div class="set-input">
+
+                                            <label>
+                                                Weight (kg)
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                class="weight-input"
+                                                min="0"
+                                                step="0.5"
+                                                placeholder="0"
+                                                required
+                                            >
+
+                                        </div>
+
+
+                                        <div class="set-input">
+
+                                            <label>
+                                                Reps
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                class="reps-input"
+                                                min="1"
+                                                placeholder="0"
+                                                required
+                                            >
+
+                                        </div>
+
+
+                                        <button
+                                            type="button"
+                                            class="remove-set"
+                                            aria-label="Remove set"
+                                        >
+                                            &times;
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Notes -->
+                <div class="form-group">
+
+                    <label for="workoutNotes">
+                        Workout Notes
+                    </label>
+
+                    <textarea
+                        id="workoutNotes"
+                        name="workoutNotes"
+                        rows="4"
+                        placeholder="How did your workout feel? Add any notes here..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- Message -->
+                <p
+                    id="workoutMessage"
+                    class="form-message"
+                ></p>
+
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+
+                    <a
+                        href="dashboard.html"
+                        class="btn secondary-btn"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        id="saveWorkoutButton"
+                        class="btn primary-btn"
+                    >
+                        Save Workout
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- Workout Tips -->
+        <section class="info-card">
+
+            <div class="info-content">
+
+                <p class="card-label">
+                    TRAIN SMART
+                </p>
+
+                <h2>
+                    Track every set.
+                    <span>Measure your progress.</span>
+                </h2>
+
+                <p>
+                    Recording your weight and reps consistently
+                    allows the system to analyze your performance
+                    and show your strength progression over time.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            &copy; 2026 GYM. All rights reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- Workout JavaScript -->
+    <script src="js/workout.js"></script>
+
+</body>
+</html>
+
