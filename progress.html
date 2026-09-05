@@ -1,129 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Gym | Progress</title>
+    <title>Progress | Gym Tracker</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
+<body class="progress-body">
 
     <!-- ================= NAVBAR ================= -->
-
-    <header class="navbar">
+    <nav class="navbar">
 
         <div class="logo">
-            <a href="dashboard.html">GYM</a>
+            GYM TRACKER
         </div>
 
-        <nav class="nav-links">
+        <div class="nav-links">
 
-            <a href="dashboard.html">Dashboard</a>
+            <a href="dashboard.html" class="nav-button">
+                Dashboard
+            </a>
 
-            <a href="plans.html">Plans</a>
+            <a href="plans.html" class="nav-button">
+                Plans
+            </a>
 
-            <a href="program.html">Programs</a>
+            <a href="program.html" class="nav-button">
+                Programs
+            </a>
 
-            <a href="workout.html">Workout</a>
+            <a href="workout.html" class="nav-button">
+                Log Workout
+            </a>
 
-            <a href="history.html">History</a>
+            <a href="history.html" class="nav-button">
+                History
+            </a>
 
-            <a href="progress.html" class="active">
+            <a href="progress.html" class="nav-button active">
                 Progress
             </a>
-            <a href="profile.html">Profile</a>
 
-        </nav>
+            <a href="profile.html" class="nav-button">
+                Profile
+            </a>
 
-        <button
-            id="logoutButton"
-            class="logout-button"
-        >
-            Logout
-        </button>
+            <button type="button" id="logoutButton" class="logout-button">
+                Logout
+            </button>
 
-    </header>
+        </div>
+
+    </nav>
 
 
     <!-- ================= MAIN ================= -->
-
-    <main class="page-container">
+    <main class="progress-page">
 
         <!-- PAGE HEADER -->
+        <header class="progress-header">
 
-        <section class="page-header">
+            <p class="progress-label">
+                PERFORMANCE
+            </p>
 
-            <div>
+            <h1>
+                Progress
+            </h1>
 
-                <p class="page-label">
-                    PERFORMANCE
-                </p>
+            <p>
+                Track your strength over time.
+            </p>
 
-                <h1>
-                    Progress
-                </h1>
-
-                <p>
-                    Track your strength and workout
-                    progress over time.
-                </p>
-
-            </div>
-
-        </section>
+        </header>
 
 
-        <!-- ================= CONTROLS ================= -->
+        <!-- ================= FILTERS ================= -->
+        <section class="progress-filter">
 
-        <section class="progress-controls">
-
-            <div class="form-group">
+            <div class="filter-field">
 
                 <label for="progressExercise">
-                    Select Exercise
+                    Exercise
                 </label>
 
                 <select id="progressExercise">
-
                     <option value="">
-                        Select an exercise
+                        Select exercise
                     </option>
-
                 </select>
 
             </div>
 
 
-            <div class="form-group">
+            <div class="filter-field">
 
                 <label for="progressPeriod">
-                    Time Period
+                    Period
                 </label>
 
                 <select id="progressPeriod">
 
                     <option value="all">
-                        All Time
+                        All time
                     </option>
 
                     <option value="30">
-                        Last 30 Days
+                        Last 30 days
                     </option>
 
                     <option value="90">
-                        Last 90 Days
+                        Last 90 days
                     </option>
 
                     <option value="180">
-                        Last 6 Months
-                    </option>
-
-                    <option value="365">
-                        Last Year
+                        Last 6 months
                     </option>
 
                 </select>
@@ -133,28 +130,23 @@
         </section>
 
 
-        <!-- ================= QUICK METRICS ================= -->
-
+        <!-- ================= METRICS ================= -->
         <section class="progress-metrics">
 
-            <article class="progress-metric">
+            <div class="progress-metric">
 
                 <span>
-                    Personal Best
+                    Best Weight
                 </span>
 
                 <strong id="progressBest">
                     —
                 </strong>
 
-                <small>
-                    Maximum weight
-                </small>
-
-            </article>
+            </div>
 
 
-            <article class="progress-metric">
+            <div class="progress-metric">
 
                 <span>
                     Starting Weight
@@ -164,14 +156,10 @@
                     —
                 </strong>
 
-                <small>
-                    First recorded weight
-                </small>
-
-            </article>
+            </div>
 
 
-            <article class="progress-metric">
+            <div class="progress-metric">
 
                 <span>
                     Improvement
@@ -181,14 +169,10 @@
                     —
                 </strong>
 
-                <small>
-                    Since first record
-                </small>
-
-            </article>
+            </div>
 
 
-            <article class="progress-metric">
+            <div class="progress-metric">
 
                 <span>
                     Workouts
@@ -198,58 +182,40 @@
                     —
                 </strong>
 
-                <small>
-                    Exercise sessions
-                </small>
-
-            </article>
+            </div>
 
         </section>
 
 
         <!-- ================= CHART ================= -->
+        <section class="progress-chart-card">
 
-        <section class="progress-card">
+            <div class="chart-header">
 
-            <div class="card-header">
+                <h2>
+                    Strength Progression
+                </h2>
 
-                <div>
-
-                    <p class="card-label">
-                        STRENGTH
-                    </p>
-
-                    <h2>
-                        Weight Progression
-                    </h2>
-
-                    <p>
-                        Maximum weight lifted for
-                        each workout.
-                    </p>
-
-                </div>
+                <p>
+                    Maximum weight recorded per workout.
+                </p>
 
             </div>
 
 
-            <div class="chart-container">
+            <div class="chart-wrapper">
 
                 <canvas id="progressChart"></canvas>
 
-                <div
-                    id="chartEmpty"
-                    class="empty-state"
-                >
-
-                    <h3>
-                        Select an exercise
-                    </h3>
+                <div id="chartEmpty" class="chart-empty">
 
                     <p>
-                        Choose an exercise above to
-                        display your strength progression.
+                        No progress data available.
                     </p>
+
+                    <span>
+                        Log workouts to start tracking.
+                    </span>
 
                 </div>
 
@@ -258,97 +224,25 @@
         </section>
 
 
-        <!-- ================= SUMMARY ================= -->
+        <!-- ================= ANALYSIS ================= -->
+        <section class="progress-analysis">
 
-        <section class="progress-summary-section">
+            <div class="analysis-title">
 
-            <div class="section-heading">
+                <span class="analysis-label">
+                    ANALYSIS
+                </span>
 
-                <div>
-
-                    <p class="section-label">
-                        ANALYSIS
-                    </p>
-
-                    <h2>
-                        Progress Summary
-                    </h2>
-
-                </div>
+                <h2>
+                    Your Progress
+                </h2>
 
             </div>
 
 
-            <div
-                id="progressSummary"
-                class="progress-summary"
-            >
-
-                <div class="empty-state">
-
-                    <h3>
-                        Select an exercise
-                    </h3>
-
-                    <p>
-                        Choose an exercise above to
-                        view your progress.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= TIPS ================= -->
-
-        <section class="progress-info">
-
-            <div class="feature-card">
-
-                <h3>
-                    📈 Progressive Overload
-                </h3>
-
-                <p>
-                    Gradually increase the weight,
-                    repetitions, or sets over time
-                    to continue improving.
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>
-                    🎯 Stay Consistent
-                </h3>
-
-                <p>
-                    Consistency is more important
-                    than lifting heavy weights
-                    occasionally.
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>
-                    💪 Track Your Strength
-                </h3>
-
-                <p>
-                    Use your workout history to
-                    understand how your strength
-                    changes over time.
-                </p>
-
-            </div>
+            <p id="progressAnalysis">
+                Select an exercise to view your progress.
+            </p>
 
         </section>
 
@@ -356,30 +250,17 @@
 
 
     <!-- ================= FOOTER ================= -->
-
-    <footer class="footer">
+    <footer class="progress-footer">
 
         <p>
-            © <span id="year"></span>
-            Gym Tracker. All rights reserved.
+            Gym Tracker
         </p>
 
     </footer>
 
 
-    <!-- ================= CHART.JS ================= -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/chart.js">
-    </script>
-
-
-    <!-- ================= JAVASCRIPT ================= -->
-
-    <script src="js/main.js"></script>
-
+    <!-- Progress JavaScript -->
     <script src="js/progress.js"></script>
 
 </body>
-
 </html>

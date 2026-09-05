@@ -1,33 +1,49 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Gym | Login</title>
+    <title>GYM | Login</title>
 
-    <!-- Main CSS -->
     <link rel="stylesheet" href="style.css">
-   
 </head>
 
-<body>
+<body class="login-body">
 
     <main class="login-page">
 
         <section class="login-container">
 
-            <div class="login-header">
-                <h1>GYM</h1>
-                <p>Welcome back! Login to continue.</p>
+            <!-- Brand -->
+            <div class="login-brand">
+                <div class="login-logo">G</div>
+
+                <div>
+                    <h1>GYM</h1>
+                    <p>Workout Tracker</p>
+                </div>
             </div>
 
-            <form id="loginForm">
+            <!-- Header -->
+            <div class="login-header">
+                <p class="login-label">WELCOME BACK</p>
+
+                <h2>Login to your account</h2>
+
+                <p class="login-subtitle">
+                    Continue tracking your workouts and progress.
+                </p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="login-form">
 
                 <!-- Username -->
-                <div class="form-group">
-                    <label for="username">Username</label>
+                <div class="login-form-group">
+                    <label for="username">
+                        Username
+                    </label>
 
                     <input
                         type="text"
@@ -40,8 +56,12 @@
                 </div>
 
                 <!-- Password -->
-                <div class="form-group">
-                    <label for="password">Password</label>
+                <div class="login-form-group">
+                    <div class="login-password-header">
+                        <label for="password">
+                            Password
+                        </label>
+                    </div>
 
                     <input
                         type="password"
@@ -53,32 +73,45 @@
                     >
                 </div>
 
-                <!-- Error / Success Message -->
-                <p id="loginMessage" class="form-message"></p>
+                <!-- Message -->
+                <p
+                    id="loginMessage"
+                    class="login-message"
+                    aria-live="polite"
+                ></p>
 
                 <!-- Login Button -->
-                <button type="submit" id="loginButton">
+                <button
+                    type="submit"
+                    id="loginButton"
+                    class="login-button"
+                >
                     Login
                 </button>
 
             </form>
 
-            <!-- Register Link -->
+            <!-- Register -->
             <div class="register-link">
-                <p>
-                    Don't have an account?
-                    <a href="register.html">Create an account</a>
-                </p>
+                <span>Don't have an account?</span>
+
+                <a href="register.html">
+                    Create an account
+                </a>
+            </div>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <span>GYM TRACKER</span>
+                <span>•</span>
+                <span>Track. Train. Progress.</span>
             </div>
 
         </section>
 
     </main>
 
-    <!-- Authentication JavaScript -->
-      <script src="js/auth.js"></script>
-    
+    <script src="js/auth.js"></script>
 
 </body>
 </html>
-

@@ -1,33 +1,59 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Gym | Sign Up</title>
+    <title>GYM | Sign Up</title>
 
-    <!-- Main CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="register-body">
 
     <main class="register-page">
 
         <section class="register-container">
 
-            <div class="register-header">
-                <h1>GYM</h1>
-                <p>Create your account and start your fitness journey.</p>
+            <!-- Brand -->
+            <div class="register-brand">
+                <div class="register-logo">G</div>
+
+                <div>
+                    <h1>GYM</h1>
+                    <p>Workout Tracker</p>
+                </div>
             </div>
 
 
-            <form id="registerForm">
+            <!-- Header -->
+            <div class="register-header">
+
+                <p class="register-label">
+                    GET STARTED
+                </p>
+
+                <h2>
+                    Create your account
+                </h2>
+
+                <p class="register-subtitle">
+                    Start tracking your workouts and building
+                    your fitness journey.
+                </p>
+
+            </div>
+
+
+            <!-- Registration Form -->
+            <form id="registerForm" class="register-form">
 
                 <!-- Full Name -->
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
+                <div class="register-form-group">
+
+                    <label for="fullName">
+                        Full Name
+                    </label>
 
                     <input
                         type="text"
@@ -37,12 +63,16 @@
                         autocomplete="name"
                         required
                     >
+
                 </div>
 
 
                 <!-- Username -->
-                <div class="form-group">
-                    <label for="username">Username</label>
+                <div class="register-form-group">
+
+                    <label for="username">
+                        Username
+                    </label>
 
                     <input
                         type="text"
@@ -52,12 +82,16 @@
                         autocomplete="username"
                         required
                     >
+
                 </div>
 
 
                 <!-- Email -->
-                <div class="form-group">
-                    <label for="email">Email</label>
+                <div class="register-form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
 
                     <input
                         type="email"
@@ -67,12 +101,16 @@
                         autocomplete="email"
                         required
                     >
+
                 </div>
 
 
                 <!-- Password -->
-                <div class="form-group">
-                    <label for="password">Password</label>
+                <div class="register-form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
 
                     <input
                         type="password"
@@ -83,12 +121,16 @@
                         minlength="6"
                         required
                     >
+
                 </div>
 
 
                 <!-- Confirm Password -->
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
+                <div class="register-form-group">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
 
                     <input
                         type="password"
@@ -99,28 +141,52 @@
                         minlength="6"
                         required
                     >
+
                 </div>
 
 
                 <!-- Message -->
-                <p id="registerMessage" class="form-message"></p>
+                <p
+                    id="registerMessage"
+                    class="register-message"
+                    aria-live="polite"
+                ></p>
 
 
-                <!-- Sign Up Button -->
-                <button type="submit" id="registerButton">
-                    Sign Up
+                <!-- Sign Up -->
+                <button
+                    type="submit"
+                    id="registerButton"
+                    class="register-button"
+                >
+                    Create Account
                 </button>
 
             </form>
 
 
-            <!-- Login Link -->
+            <!-- Login -->
             <div class="login-link">
 
-                <p>
+                <span>
                     Already have an account?
-                    <a href="login.html">Login</a>
-                </p>
+                </span>
+
+                <a href="login.html">
+                    Login
+                </a>
+
+            </div>
+
+
+            <!-- Footer -->
+            <div class="register-footer">
+
+                <span>GYM TRACKER</span>
+
+                <span>•</span>
+
+                <span>Track. Train. Progress.</span>
 
             </div>
 
@@ -129,7 +195,6 @@
     </main>
 
 
-    <!-- Authentication JavaScript -->
     <script src="js/auth.js"></script>
 
 </body>

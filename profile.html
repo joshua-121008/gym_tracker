@@ -9,67 +9,99 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="profile-body">
 
-    <!-- NAVBAR -->
+    <!-- ================= NAVBAR ================= -->
     <nav class="navbar">
 
         <div class="logo">
-            <a href="dashboard.html">GYM TRACKER</a>
+            GYM TRACKER
         </div>
 
         <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="plans.html">Workout Plans</a>
-            <a href="program.html">Programs</a>
-            <a href="workout.html">Log Workout</a>
-            <a href="history.html">History</a>
-            <a href="progress.html">Progress</a>
-            <a href="profile.html" class="active">Profile</a>
-            <button id="logoutButton" class="logout-btn">Logout</button>
+
+            <a href="dashboard.html" class="nav-button">
+                Dashboard
+            </a>
+
+            <a href="plans.html" class="nav-button">
+                Plans
+            </a>
+
+            <a href="program.html" class="nav-button">
+                Programs
+            </a>
+
+            <a href="workout.html" class="nav-button">
+                Log Workout
+            </a>
+
+            <a href="history.html" class="nav-button">
+                History
+            </a>
+
+            <a href="progress.html" class="nav-button">
+                Progress
+            </a>
+
+            <a href="profile.html" class="nav-button active">
+                Profile
+            </a>
+
+            <button type="button" id="logoutButton" class="logout-button">
+                Logout
+            </button>
+
         </div>
 
     </nav>
 
 
-    <!-- PROFILE PAGE -->
+    <!-- ================= MAIN ================= -->
     <main class="profile-page">
 
-        <!-- PAGE HEADER -->
-        <section class="page-header">
+        <!-- HEADER -->
+        <header class="profile-header">
 
-            <div>
-                <span class="page-label">ACCOUNT</span>
+            <p class="profile-label">
+                ACCOUNT
+            </p>
 
-                <h1>My Profile</h1>
+            <h1>
+                Profile
+            </h1>
 
-                <p>
-                    Manage your account information and security.
-                </p>
-            </div>
+            <p>
+                Manage your account information and security.
+            </p>
 
-        </section>
+        </header>
 
 
-        <!-- PROFILE GRID -->
-        <section class="profile-grid">
+        <!-- ================= PROFILE INFORMATION ================= -->
+        <section class="profile-section">
 
-            <!-- PROFILE INFORMATION -->
-            <div class="form-card profile-card">
+            <div class="section-heading">
 
-                <div class="card-header">
-                    <h2>Profile Information</h2>
+                <div>
+                    <h2>
+                        Personal Information
+                    </h2>
 
                     <p>
-                        Your personal account information.
+                        Update the information associated with your account.
                     </p>
                 </div>
 
+            </div>
 
-                <form id="profileForm">
+
+            <form id="profileForm">
+
+                <div class="profile-form-grid">
 
                     <!-- FULL NAME -->
-                    <div class="form-group">
+                    <div class="profile-field">
 
                         <label for="fullName">
                             Full Name
@@ -78,16 +110,14 @@
                         <input
                             type="text"
                             id="fullName"
-                            name="fullName"
                             placeholder="Enter your full name"
-                            required
                         >
 
                     </div>
 
 
                     <!-- USERNAME -->
-                    <div class="form-group">
+                    <div class="profile-field">
 
                         <label for="username">
                             Username
@@ -96,16 +126,14 @@
                         <input
                             type="text"
                             id="username"
-                            name="username"
-                            placeholder="Username"
-                            required
+                            placeholder="Enter your username"
                         >
 
                     </div>
 
 
                     <!-- EMAIL -->
-                    <div class="form-group">
+                    <div class="profile-field full-width">
 
                         <label for="email">
                             Email
@@ -114,122 +142,137 @@
                         <input
                             type="email"
                             id="email"
-                            name="email"
                             placeholder="Enter your email"
-                            required
                         >
 
                     </div>
 
+                </div>
+
+
+                <div class="profile-form-actions">
 
                     <button
                         type="submit"
-                        class="btn primary-btn"
                         id="saveProfileButton"
+                        class="primary-button"
                     >
                         Save Changes
                     </button>
 
+                </div>
 
-                    <p
-                        id="profileMessage"
-                        class="form-message"
-                    ></p>
-
-                </form>
-
-            </div>
+            </form>
 
 
-            <!-- ACCOUNT INFORMATION -->
-            <div class="form-card profile-card">
+            <div
+                id="profileMessage"
+                class="profile-message"
+            ></div>
 
-                <div class="card-header">
+        </section>
 
-                    <h2>Account Information</h2>
+
+        <!-- ================= ACCOUNT INFORMATION ================= -->
+        <section class="profile-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>
+                        Account Information
+                    </h2>
 
                     <p>
-                        Information about your Gym Tracker account.
+                        Basic information about your Gym Tracker account.
                     </p>
-
-                </div>
-
-
-                <div class="profile-info-list">
-
-                    <div class="profile-info-item">
-
-                        <span class="profile-info-label">
-                            Account ID
-                        </span>
-
-                        <strong id="accountId">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="profile-info-item">
-
-                        <span class="profile-info-label">
-                            Member Since
-                        </span>
-
-                        <strong id="memberSince">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="profile-info-item">
-
-                        <span class="profile-info-label">
-                            Username
-                        </span>
-
-                        <strong id="accountUsername">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="profile-info-item">
-
-                        <span class="profile-info-label">
-                            Email
-                        </span>
-
-                        <strong id="accountEmail">
-                            —
-                        </strong>
-
-                    </div>
-
                 </div>
 
             </div>
 
 
-            <!-- CHANGE PASSWORD -->
-            <div class="form-card profile-card">
+            <div class="account-details">
 
-                <div class="card-header">
+                <div class="account-detail">
 
-                    <h2>Change Password</h2>
+                    <span>
+                        Account ID
+                    </span>
+
+                    <strong id="accountId">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="account-detail">
+
+                    <span>
+                        Username
+                    </span>
+
+                    <strong id="accountUsername">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="account-detail">
+
+                    <span>
+                        Email
+                    </span>
+
+                    <strong id="accountEmail">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="account-detail">
+
+                    <span>
+                        Member Since
+                    </span>
+
+                    <strong id="memberSince">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PASSWORD ================= -->
+        <section class="profile-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>
+                        Change Password
+                    </h2>
 
                     <p>
                         Keep your account secure with a strong password.
                     </p>
-
                 </div>
 
+            </div>
 
-                <form id="passwordForm">
 
-                    <div class="form-group">
+            <form id="passwordForm">
+
+                <div class="profile-form-grid">
+
+                    <!-- CURRENT PASSWORD -->
+                    <div class="profile-field full-width">
 
                         <label for="currentPassword">
                             Current Password
@@ -239,13 +282,13 @@
                             type="password"
                             id="currentPassword"
                             placeholder="Enter current password"
-                            required
                         >
 
                     </div>
 
 
-                    <div class="form-group">
+                    <!-- NEW PASSWORD -->
+                    <div class="profile-field">
 
                         <label for="newPassword">
                             New Password
@@ -255,77 +298,93 @@
                             type="password"
                             id="newPassword"
                             placeholder="Enter new password"
-                            minlength="6"
-                            required
                         >
 
                     </div>
 
 
-                    <div class="form-group">
+                    <!-- CONFIRM PASSWORD -->
+                    <div class="profile-field">
 
                         <label for="confirmPassword">
-                            Confirm New Password
+                            Confirm Password
                         </label>
 
                         <input
                             type="password"
                             id="confirmPassword"
                             placeholder="Confirm new password"
-                            minlength="6"
-                            required
                         >
 
                     </div>
 
-
-                    <button
-                        type="submit"
-                        class="btn primary-btn"
-                        id="changePasswordButton"
-                    >
-                        Change Password
-                    </button>
-
-
-                    <p
-                        id="passwordMessage"
-                        class="form-message"
-                    ></p>
-
-                </form>
-
-            </div>
-
-
-            <!-- DANGER ZONE -->
-            <div class="form-card profile-card danger-card">
-
-                <div class="card-header">
-
-                    <h2>Danger Zone</h2>
-
-                    <p>
-                        Permanently delete your Gym Tracker account
-                        and all associated workout data.
-                    </p>
-
                 </div>
 
 
-                <button
-                    type="button"
-                    class="btn delete-btn"
-                    id="deleteAccountButton"
-                >
+                <div class="profile-form-actions">
+
+                    <button
+                        type="submit"
+                        id="changePasswordButton"
+                        class="primary-button"
+                    >
+                        Update Password
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <div
+                id="passwordMessage"
+                class="profile-message"
+            ></div>
+
+        </section>
+
+
+        <!-- ================= DANGER ZONE ================= -->
+        <section class="profile-danger">
+
+            <div>
+
+                <span class="danger-label">
+                    DANGER ZONE
+                </span>
+
+                <h2>
                     Delete Account
-                </button>
+                </h2>
+
+                <p>
+                    Permanently delete your account and all associated workout data.
+                </p>
 
             </div>
+
+
+            <button
+                type="button"
+                id="deleteAccountButton"
+                class="delete-button"
+            >
+                Delete Account
+            </button>
 
         </section>
 
     </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="profile-footer">
+
+        <p>
+            Gym Tracker
+        </p>
+
+    </footer>
 
 
     <script src="js/profile.js"></script>

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="dashboard-body">
 
 <header class="navbar">
 
@@ -20,11 +20,15 @@
     <nav>
         <a href="dashboard.html" class="active">Dashboard</a>
         <a href="plans.html">Workout Plans</a>
+        <a href="program.html">Programs</a>
         <a href="workout.html">Log Workout</a>
         <a href="history.html">History</a>
         <a href="progress.html">Progress</a>
         <a href="profile.html">Profile</a>
-        <button id="logoutButton" class="logout-btn">Logout</button>
+
+        <button id="logoutButton" class="logout-btn">
+            Logout
+        </button>
     </nav>
 
 </header>
@@ -32,7 +36,7 @@
 
 <main class="dashboard">
 
-    <!-- Welcome -->
+    <!-- HERO -->
     <section class="dashboard-header">
 
         <div>
@@ -43,9 +47,9 @@
                 <span id="username">User</span>
             </h1>
 
-            <p>
-                Keep training, keep improving, and keep tracking
-                your progress.
+            <p class="dashboard-subtitle">
+                Track your workouts, monitor your progress,
+                and keep getting stronger.
             </p>
         </div>
 
@@ -56,13 +60,13 @@
     </section>
 
 
-    <!-- Main Statistics -->
+    <!-- MAIN STATS -->
     <section class="stats-grid">
 
         <article class="stat-card">
             <p>Total Workouts</p>
             <h2 id="totalWorkouts">0</h2>
-            <span>Workouts completed</span>
+            <span>Completed workouts</span>
         </article>
 
         <article class="stat-card">
@@ -86,59 +90,102 @@
     </section>
 
 
-    <!-- Advanced Statistics -->
-    <section class="advanced-stats-grid">
+    <!-- PERFORMANCE -->
+    <section class="performance-section">
 
-        <article class="advanced-stat-card">
-            <div class="advanced-stat-icon">🔥</div>
-
+        <div class="section-heading">
             <div>
-                <p>Workout Streak</p>
-                <h2 id="workoutStreak">0 days</h2>
-                <span>Keep your consistency going</span>
+                <p class="card-label">PERFORMANCE</p>
+                <h2>Your Training Overview</h2>
             </div>
-        </article>
+        </div>
 
 
-        <article class="advanced-stat-card">
-            <div class="advanced-stat-icon">🏆</div>
+        <div class="performance-grid">
 
-            <div>
-                <p>Heaviest Lift</p>
-                <h2 id="heaviestLift">0 kg</h2>
-                <span id="heaviestExercise">No data yet</span>
-            </div>
-        </article>
+            <article class="performance-card">
 
+                <div class="performance-top">
+                    <span class="performance-icon">🔥</span>
 
-        <article class="advanced-stat-card">
-            <div class="advanced-stat-icon">💪</div>
+                    <div>
+                        <p>Workout Streak</p>
+                        <h3 id="workoutStreak">0 days</h3>
+                    </div>
+                </div>
 
-            <div>
-                <p>Total Sets</p>
-                <h2 id="totalSets">0</h2>
-                <span>Sets completed</span>
-            </div>
-        </article>
+                <span class="performance-description">
+                    Keep your consistency going
+                </span>
+
+            </article>
 
 
-        <article class="advanced-stat-card">
-            <div class="advanced-stat-icon">📈</div>
+            <article class="performance-card">
 
-            <div>
-                <p>Personal Records</p>
-                <h2 id="personalRecords">0</h2>
-                <span>Exercise bests</span>
-            </div>
-        </article>
+                <div class="performance-top">
+                    <span class="performance-icon">🏆</span>
+
+                    <div>
+                        <p>Heaviest Lift</p>
+                        <h3 id="heaviestLift">0 kg</h3>
+                    </div>
+                </div>
+
+                <span
+                    id="heaviestExercise"
+                    class="performance-description"
+                >
+                    No data yet
+                </span>
+
+            </article>
+
+
+            <article class="performance-card">
+
+                <div class="performance-top">
+                    <span class="performance-icon">💪</span>
+
+                    <div>
+                        <p>Total Sets</p>
+                        <h3 id="totalSets">0</h3>
+                    </div>
+                </div>
+
+                <span class="performance-description">
+                    Sets completed
+                </span>
+
+            </article>
+
+
+            <article class="performance-card">
+
+                <div class="performance-top">
+                    <span class="performance-icon">📈</span>
+
+                    <div>
+                        <p>Personal Records</p>
+                        <h3 id="personalRecords">0</h3>
+                    </div>
+                </div>
+
+                <span class="performance-description">
+                    Exercise bests
+                </span>
+
+            </article>
+
+        </div>
 
     </section>
 
 
-    <!-- Dashboard Content -->
+    <!-- MAIN CONTENT -->
     <section class="dashboard-grid">
 
-        <!-- Recent Workouts -->
+        <!-- RECENT WORKOUTS -->
         <div class="dashboard-card">
 
             <div class="card-header">
@@ -149,10 +196,11 @@
                 </div>
 
                 <a href="history.html">
-                    View All
+                    View All →
                 </a>
 
             </div>
+
 
             <div id="recentWorkouts" class="workout-list">
 
@@ -161,8 +209,8 @@
                     <h3>No workouts yet</h3>
 
                     <p>
-                        Start your first workout and it
-                        will appear here.
+                        Log your first workout to start
+                        tracking your progress.
                     </p>
 
                     <a href="workout.html" class="btn primary-btn">
@@ -176,47 +224,66 @@
         </div>
 
 
-        <!-- Quick Actions -->
+        <!-- QUICK ACTIONS -->
         <div class="dashboard-card">
 
             <div class="card-header">
 
                 <div>
-                    <p class="card-label">QUICK ACTIONS</p>
-                    <h2>Get Started</h2>
+                    <p class="card-label">SHORTCUTS</p>
+                    <h2>Quick Actions</h2>
                 </div>
 
             </div>
 
+
             <div class="quick-actions">
 
                 <a href="plans.html" class="action-card">
+
                     <span class="action-number">01</span>
 
                     <div>
                         <h3>Workout Plans</h3>
-                        <p>Create or manage your training plans.</p>
+                        <p>
+                            Create and manage your plans.
+                        </p>
                     </div>
+
+                    <span class="action-arrow">→</span>
+
                 </a>
 
 
                 <a href="workout.html" class="action-card">
+
                     <span class="action-number">02</span>
 
                     <div>
                         <h3>Log Workout</h3>
-                        <p>Record today's exercises, sets and reps.</p>
+                        <p>
+                            Record today's training.
+                        </p>
                     </div>
+
+                    <span class="action-arrow">→</span>
+
                 </a>
 
 
                 <a href="progress.html" class="action-card">
+
                     <span class="action-number">03</span>
 
                     <div>
                         <h3>View Progress</h3>
-                        <p>See how your strength has improved.</p>
+                        <p>
+                            Track your strength gains.
+                        </p>
                     </div>
+
+                    <span class="action-arrow">→</span>
+
                 </a>
 
             </div>
@@ -226,26 +293,22 @@
     </section>
 
 
-    <!-- Motivation -->
+    <!-- MOTIVATION -->
     <section class="motivation-card">
 
-        <div>
+        <p class="card-label">
+            KEEP GOING
+        </p>
 
-            <p class="card-label">
-                KEEP GOING
-            </p>
+        <h2>
+            Progress is built
+            <span>one workout at a time.</span>
+        </h2>
 
-            <h2>
-                Progress is built
-                <span>one workout at a time.</span>
-            </h2>
-
-            <p>
-                Stay consistent, track your performance,
-                and become stronger every day.
-            </p>
-
-        </div>
+        <p>
+            Stay consistent, track your performance,
+            and become stronger every day.
+        </p>
 
     </section>
 
