@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // =========================
+    // ==========================================
     // AUTHENTICATION
-    // =========================
+    // ==========================================
 
     const token = localStorage.getItem("gymToken");
     const userData = localStorage.getItem("gymCurrentUser");
@@ -17,19 +17,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         user = JSON.parse(userData);
     } catch (error) {
+
         localStorage.removeItem("gymToken");
         localStorage.removeItem("gymCurrentUser");
+
         window.location.href = "login.html";
         return;
     }
 
 
-    // =========================
-    // HELPER FUNCTIONS
-    // =========================
+    // ==========================================
+    // HELPERS
+    // ==========================================
 
     function setText(id, value) {
-        const element = document.querySelector(`#${id}`);
+
+        const element = document.getElementById(id);
 
         if (element) {
             element.textContent = value;
@@ -38,9 +41,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     function escapeHTML(value) {
+
         return String(value ?? "").replace(
             /[&<>"']/g,
-            (character) => ({
+            character => ({
                 "&": "&amp;",
                 "<": "&lt;",
                 ">": "&gt;",
@@ -51,28 +55,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // =========================
-    // SHOW USERNAME
-    // =========================
+    // ==========================================
+    // USERNAME
+    // ==========================================
 
-    const welcome = document.querySelector("#username");
+    setText(
+        "username",
+        user.full_name ||
+        user.fullName ||
+        user.username ||
+        "User"
+    );
 
-    if (welcome) {
-        welcome.textContent =
-            user.full_name ||
-            user.fullName ||
-            user.username;
-    }
 
-
-    // =========================
+    // ==========================================
     // LOGOUT
-    // =========================
+    // ==========================================
 
     const logoutButton =
-        document.querySelector("#logoutButton");
+        document.getElementById("logoutButton");
 
     if (logoutButton) {
+
         logoutButton.addEventListener("click", () => {
 
             localStorage.removeItem("gymToken");
@@ -83,25 +87,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // =========================
-    // GET WORKOUTS FROM API
-    // =========================
+    // ==========================================
+    // LOAD WORKOUTS
+    // ==========================================
 
     try {
 
-        const response = await fetch(
-            "/api/workouts",
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+        const response = await fetch("/api/workouts", {
+
+            method: "GET",
+
+            headers: {
+                "Authorization": `Bearer ${token}`
             }
-        );
+
+        });
 
 
-        // Token invalid / expired
-        if (response.status === 401 || response.status === 403) {
+        // Token expired
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
 
             localStorage.removeItem("gymToken");
             localStorage.removeItem("gymCurrentUser");
@@ -120,16 +127,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         const workouts = await response.json();
 
 
-        // =========================
+        if (!Array.isArray(workouts)) {
+            throw new Error("Invalid workout data");
+        }
+
+
+        // ==========================================
         // TOTAL WORKOUTS
-        // =========================
+        // ==========================================
 
         const totalWorkouts = workouts.length;
 
 
-        // =========================
+        // ==========================================
         // TOTAL EXERCISES
-        // =========================
+        // ==========================================
 
         const totalExercises = workouts.reduce(
             (total, workout) => {
@@ -142,53 +154,67 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
 
-        // =========================
-        // TOTAL WEIGHT
-        // =========================
+        // ==========================================
+        // TOTAL SETS + VOLUME
+        // ==========================================
 
-        const totalWeight = workouts.reduce(
-            (workoutTotal, workout) => {
+        let totalSets = 0;
+        let totalVolume = 0;
 
-                return workoutTotal +
-                    (workout.exercises || []).reduce(
-                        (exerciseTotal, exercise) => {
-
-                            return exerciseTotal +
-                                (exercise.sets || []).reduce(
-                                    (setTotal, set) => {
-
-                                        const weight =
-                                            Number(set.weight) || 0;
-
-                                        const reps =
-                                            Number(set.reps) || 0;
-
-                                        return setTotal +
-                                            (weight * reps);
-
-                                    },
-                                    0
-                                );
-
-                        },
-                        0
-                    );
-
-            },
-            0
-        );
+        let heaviestLift = 0;
+        let heaviestExercise = "No data yet";
 
 
-        // =========================
+        workouts.forEach(workout => {
+
+            (workout.exercises || []).forEach(exercise => {
+
+                (exercise.sets || []).forEach(set => {
+
+                    const weight =
+                        Number(set.weight) || 0;
+
+                    const reps =
+                        Number(set.reps) || 0;
+
+
+                    totalSets++;
+
+                    totalVolume +=
+                        weight * reps;
+
+
+                    if (weight > heaviestLift) {
+
+                        heaviestLift = weight;
+
+                        heaviestExercise =
+                            exercise.name ||
+                            "Unknown exercise";
+                    }
+
+                });
+
+            });
+
+        });
+
+
+        // ==========================================
         // THIS WEEK
-        // =========================
+        // ==========================================
 
         const now = new Date();
 
         const weekStart = new Date(now);
 
+        const day = weekStart.getDay();
+
+        const difference =
+            day === 0 ? 6 : day - 1;
+
         weekStart.setDate(
-            now.getDate() - now.getDay()
+            weekStart.getDate() - difference
         );
 
         weekStart.setHours(
@@ -199,20 +225,170 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
 
-        const weeklyWorkouts = workouts.filter(
-            (workout) => {
+        const weeklyWorkouts =
+            workouts.filter(workout => {
 
                 const workoutDate =
-                    new Date(workout.workout_date);
+                    new Date(workout.workoutDate);
 
                 return workoutDate >= weekStart;
+
+            }).length;
+
+
+        // ==========================================
+        // PERSONAL RECORDS
+        // ==========================================
+
+        const exerciseBestWeights = {};
+
+        workouts.forEach(workout => {
+
+            (workout.exercises || []).forEach(exercise => {
+
+                const exerciseName =
+                    exercise.name?.trim();
+
+                if (!exerciseName) {
+                    return;
+                }
+
+
+                (exercise.sets || []).forEach(set => {
+
+                    const weight =
+                        Number(set.weight) || 0;
+
+
+                    if (
+                        !exerciseBestWeights[exerciseName] ||
+                        weight >
+                        exerciseBestWeights[exerciseName]
+                    ) {
+
+                        exerciseBestWeights[exerciseName] =
+                            weight;
+                    }
+
+                });
+
+            });
+
+        });
+
+
+        const personalRecords =
+            Object.keys(exerciseBestWeights).filter(
+                exercise =>
+                    exerciseBestWeights[exercise] > 0
+            ).length;
+
+
+        // ==========================================
+        // WORKOUT STREAK
+        // ==========================================
+
+        const workoutDates =
+            [...new Set(
+
+                workouts.map(workout => {
+
+                    const date =
+                        new Date(workout.workoutDate);
+
+                    return date.toISOString().split("T")[0];
+
+                })
+
+            )].sort().reverse();
+
+
+        let workoutStreak = 0;
+
+
+        if (workoutDates.length > 0) {
+
+            const today =
+                new Date();
+
+            today.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            const latestDate =
+                new Date(workoutDates[0]);
+
+            latestDate.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            const daysSinceLatest =
+                Math.floor(
+                    (today - latestDate) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+
+            // Streak is active if latest workout
+            // was today or yesterday
+            if (daysSinceLatest <= 1) {
+
+                workoutStreak = 1;
+
+                let previousDate =
+                    latestDate;
+
+
+                for (let i = 1; i < workoutDates.length; i++) {
+
+                    const currentDate =
+                        new Date(workoutDates[i]);
+
+                    currentDate.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+
+                    const difference =
+                        Math.floor(
+                            (previousDate - currentDate) /
+                            (1000 * 60 * 60 * 24)
+                        );
+
+
+                    if (difference === 1) {
+
+                        workoutStreak++;
+
+                        previousDate =
+                            currentDate;
+
+                    } else {
+
+                        break;
+                    }
+
+                }
+
             }
-        ).length;
+
+        }
 
 
-        // =========================
-        // UPDATE STATISTICS
-        // =========================
+        // ==========================================
+        // UPDATE DASHBOARD
+        // ==========================================
 
         setText(
             "totalWorkouts",
@@ -231,16 +407,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         setText(
             "totalWeight",
-            `${totalWeight.toFixed(1)} kg`
+            `${totalVolume.toFixed(1)} kg`
+        );
+
+        setText(
+            "workoutStreak",
+            `${workoutStreak} ${workoutStreak === 1 ? "day" : "days"}`
+        );
+
+        setText(
+            "heaviestLift",
+            `${heaviestLift.toFixed(1)} kg`
+        );
+
+        setText(
+            "heaviestExercise",
+            heaviestExercise
+        );
+
+        setText(
+            "totalSets",
+            totalSets
+        );
+
+        setText(
+            "personalRecords",
+            personalRecords
         );
 
 
-        // =========================
+        // ==========================================
         // RECENT WORKOUTS
-        // =========================
+        // ==========================================
 
         const recentContainer =
-            document.querySelector("#recentWorkouts");
+            document.getElementById("recentWorkouts");
 
 
         if (!recentContainer) {
@@ -252,13 +453,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             [...workouts]
                 .sort(
                     (a, b) =>
-                        new Date(b.workout_date) -
-                        new Date(a.workout_date)
+                        new Date(b.workoutDate) -
+                        new Date(a.workoutDate)
                 )
                 .slice(0, 5);
 
 
-        // No workouts
         if (recentWorkouts.length === 0) {
 
             recentContainer.innerHTML = `
@@ -287,57 +487,67 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // Display recent workouts
         recentContainer.innerHTML =
-            recentWorkouts.map(
-                (workout) => {
+            recentWorkouts.map(workout => {
 
-                    const date =
-                        new Date(
-                            workout.workout_date
-                        ).toLocaleDateString();
-
-
-                    const exerciseCount =
-                        workout.exercises?.length || 0;
+                const date =
+                    new Date(
+                        workout.workoutDate
+                    ).toLocaleDateString();
 
 
-                    return `
+                const exerciseCount =
+                    workout.exercises?.length || 0;
 
-                        <div class="history-item">
 
-                            <div>
+                const setCount =
+                    (workout.exercises || [])
+                        .reduce(
+                            (total, exercise) =>
+                                total +
+                                (exercise.sets?.length || 0),
+                            0
+                        );
 
-                                <h3>
-                                    ${escapeHTML(
-                                        workout.workout_name
-                                    )}
-                                </h3>
 
-                                <p>
-                                    ${date}
-                                </p>
+                return `
 
-                                <p>
-                                    ${exerciseCount}
-                                    exercises
-                                </p>
+                    <div class="history-item">
 
-                            </div>
+                        <div>
 
-                            <a
-                                href="history.html"
-                                class="btn btn-secondary"
-                            >
-                                View
-                            </a>
+                            <h3>
+                                ${escapeHTML(
+                                    workout.workoutName ||
+                                    "Workout"
+                                )}
+                            </h3>
+
+                            <p>
+                                ${date}
+                            </p>
+
+                            <p>
+                                ${exerciseCount}
+                                exercises ·
+                                ${setCount}
+                                sets
+                            </p>
 
                         </div>
 
-                    `;
+                        <a
+                            href="history.html"
+                            class="btn secondary-btn"
+                        >
+                            View
+                        </a>
 
-                }
-            ).join("");
+                    </div>
+
+                `;
+
+            }).join("");
 
 
     } catch (error) {
@@ -349,7 +559,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         const recentContainer =
-            document.querySelector("#recentWorkouts");
+            document.getElementById("recentWorkouts");
 
 
         if (recentContainer) {
@@ -361,8 +571,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <h3>Unable to load workouts</h3>
 
                     <p>
-                        Please check your server connection
-                        and try again.
+                        Please check your server
+                        connection and try again.
                     </p>
 
                 </div>

@@ -10,6 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const planRoutes = require("./routes/planRoutes");
 const programRoutes = require("./routes/programRoutes");
 const workoutRoutes = require("./routes/workoutRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/programs", programRoutes);
 app.use("/api/workouts", workoutRoutes);
+app.use("/api/profile", profileRoutes);
 
 // API test route
 app.get("/api", (req, res) => {

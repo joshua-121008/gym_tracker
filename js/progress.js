@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
+
     const token = localStorage.getItem("gymToken");
 
     if (!token) {
@@ -7,63 +11,97 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    const exerciseSelect =
-        document.getElementById("progressExercise");
 
-    const periodSelect =
-        document.getElementById("progressPeriod");
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
 
-    const canvas =
-        document.getElementById("progressChart");
+    const exerciseSelect = document.getElementById("progressExercise");
+    const periodSelect = document.getElementById("progressPeriod");
+    const canvas = document.getElementById("progressChart");
+    const chartEmpty = document.getElementById("chartEmpty");
+    const summary = document.getElementById("progressSummary");
+    const logoutButton = document.getElementById("logoutButton");
 
-    const summary =
-        document.getElementById("progressSummary");
+    const progressBest = document.getElementById("progressBest");
+    const progressStarting = document.getElementById("progressStarting");
+    const progressImprovement = document.getElementById("progressImprovement");
+    const progressWorkoutCount = document.getElementById("progressWorkoutCount");
 
     let workouts = [];
+    let progressChart = null;
 
-    // =====================================
-    // LOAD WORKOUTS
-    // =====================================
 
-    try {
+    // =====================================================
+    // LOGOUT
+    // =====================================================
 
-        const response = await fetch("/api/workouts", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
+    if (logoutButton) {
+        logoutButton.addEventListener("click", logout);
+    }
 
-        const data = await response.json();
-
-        console.log("Progress API:", data);
-
-        if (!response.ok) {
-            throw new Error(
-                data.message || "Failed to load workouts"
-            );
-        }
-
-        workouts = data;
-
-        loadExercises();
-
-    } catch (error) {
-
-        console.error("Progress error:", error);
-
-        summary.innerHTML = `
-            <div class="empty-state">
-                <h3>Unable to load progress</h3>
-                <p>${error.message}</p>
-            </div>
-        `;
+    function logout() {
+        localStorage.removeItem("gymToken");
+        localStorage.removeItem("gymCurrentUser");
+        window.location.href = "login.html";
     }
 
 
-    // =====================================
-    // LOAD EXERCISES INTO DROPDOWN
-    // =====================================
+    // =====================================================
+    // LOAD WORKOUTS
+    // =====================================================
+
+    async function loadWorkouts() {
+
+        try {
+
+            const response = await fetch("/api/workouts", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                logout();
+                return;
+            }
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to load workouts"
+                );
+            }
+
+            workouts = Array.isArray(data) ? data : [];
+
+            console.log("Progress API:", workouts);
+
+            loadExercises();
+
+        } catch (error) {
+
+            console.error("Progress error:", error);
+
+            summary.innerHTML = `
+                <div class="empty-state">
+                    <h3>Unable to load progress</h3>
+                    <p>
+                        ${escapeHTML(
+                            error.message || "Something went wrong."
+                        )}
+                    </p>
+                </div>
+            `;
+        }
+    }
+
+
+    // =====================================================
+    // LOAD EXERCISES
+    // =====================================================
 
     function loadExercises() {
 
@@ -71,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         workouts.forEach(workout => {
 
-            if (!workout.exercises) {
+            if (!Array.isArray(workout.exercises)) {
                 return;
             }
 
@@ -86,61 +124,56 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
 
+        const sortedExercises = [...exerciseNames].sort(
+            (a, b) => a.localeCompare(b)
+        );
+
+
         exerciseSelect.innerHTML = `
-            <option value="">
-                Select an exercise
-            </option>
+            <option value="">Select an exercise</option>
         `;
 
 
-        [...exerciseNames]
-            .sort()
-            .forEach(name => {
+        sortedExercises.forEach(name => {
 
-                const option =
-                    document.createElement("option");
+            const option = document.createElement("option");
 
-                option.value = name;
+            option.value = name;
+            option.textContent = name;
 
-                option.textContent = name;
+            exerciseSelect.appendChild(option);
 
-                exerciseSelect.appendChild(option);
-
-            });
+        });
 
 
         console.log(
             "Exercises found:",
-            [...exerciseNames]
+            sortedExercises
         );
 
 
-        // Automatically select first exercise
-        if (exerciseNames.size > 0) {
+        if (sortedExercises.length > 0) {
 
-            exerciseSelect.value =
-                [...exerciseNames][0];
+            exerciseSelect.value = sortedExercises[0];
 
             updateProgress();
 
-        }
+        } else {
 
+            clearProgress();
+
+        }
     }
 
 
-    // =====================================
-    // EXERCISE CHANGE
-    // =====================================
+    // =====================================================
+    // EVENT LISTENERS
+    // =====================================================
 
     exerciseSelect.addEventListener(
         "change",
         updateProgress
     );
-
-
-    // =====================================
-    // PERIOD CHANGE
-    // =====================================
 
     periodSelect.addEventListener(
         "change",
@@ -148,31 +181,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
 
-    // =====================================
+    // =====================================================
     // UPDATE PROGRESS
-    // =====================================
+    // =====================================================
 
     function updateProgress() {
 
-        const exerciseName =
-            exerciseSelect.value;
+        const exerciseName = exerciseSelect.value;
 
         if (!exerciseName) {
-
-            clearChart();
-
-            showEmptySummary();
-
+            clearProgress();
             return;
         }
 
 
-        const progressData =
-            getProgressData(exerciseName);
+        const progressData = getProgressData(
+            exerciseName
+        );
 
 
         console.log(
-            "Selected:",
+            "Selected exercise:",
             exerciseName
         );
 
@@ -185,13 +214,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (progressData.length === 0) {
 
             clearChart();
+            resetMetrics();
 
             summary.innerHTML = `
                 <div class="empty-state">
                     <h3>No data available</h3>
                     <p>
                         No weight data found for
-                        ${exerciseName}.
+                        ${escapeHTML(exerciseName)}
+                        in this time period.
                     </p>
                 </div>
             `;
@@ -205,51 +236,54 @@ document.addEventListener("DOMContentLoaded", async () => {
             exerciseName
         );
 
-        showSummary(
+
+        updateMetrics(
             progressData
+        );
+
+
+        showSummary(
+            progressData,
+            exerciseName
         );
     }
 
 
-    // =====================================
+    // =====================================================
     // GET PROGRESS DATA
-    // =====================================
+    // =====================================================
 
     function getProgressData(exerciseName) {
 
-        const period =
-            periodSelect.value;
+        const period = periodSelect.value;
 
-        const today =
-            new Date();
+        const today = new Date();
 
         const result = [];
 
 
         workouts.forEach(workout => {
 
-            if (!workout.exercises) {
+            if (
+                !Array.isArray(workout.exercises) ||
+                workout.exercises.length === 0
+            ) {
                 return;
             }
 
 
-            const workoutDate =
-                new Date(workout.workoutDate);
+            const workoutDate = new Date(
+                workout.workoutDate
+            );
 
-
-            // -------------------------------
-            // TIME FILTER
-            // -------------------------------
 
             if (period !== "all") {
 
-                const days =
-                    Number(period);
+                const days = Number(period);
 
                 const difference =
                     (
-                        today -
-                        workoutDate
+                        today - workoutDate
                     ) /
                     (
                         1000 *
@@ -259,85 +293,69 @@ document.addEventListener("DOMContentLoaded", async () => {
                     );
 
 
-                if (difference > days) {
+                if (
+                    difference < 0 ||
+                    difference > days
+                ) {
                     return;
                 }
-
             }
 
 
-            // -------------------------------
-            // FIND EXERCISE
-            // -------------------------------
+            workout.exercises.forEach(exercise => {
 
-            workout.exercises.forEach(
-                exercise => {
+                if (!exercise.name) {
+                    return;
+                }
 
-                    if (
-                        exercise.name.toLowerCase() !==
-                        exerciseName.toLowerCase()
-                    ) {
-                        return;
+
+                if (
+                    exercise.name.toLowerCase() !==
+                    exerciseName.toLowerCase()
+                ) {
+                    return;
+                }
+
+
+                if (
+                    !Array.isArray(exercise.sets) ||
+                    exercise.sets.length === 0
+                ) {
+                    return;
+                }
+
+
+                let maxWeight = 0;
+
+
+                exercise.sets.forEach(set => {
+
+                    const weight = Number(
+                        set.weight || 0
+                    );
+
+
+                    if (weight > maxWeight) {
+                        maxWeight = weight;
                     }
 
-
-                    if (
-                        !exercise.sets ||
-                        exercise.sets.length === 0
-                    ) {
-                        return;
-                    }
+                });
 
 
-                    // -------------------------
-                    // FIND MAX WEIGHT
-                    // -------------------------
+                if (maxWeight > 0) {
 
-                    let maxWeight = 0;
-
-
-                    exercise.sets.forEach(set => {
-
-                        const weight =
-                            Number(
-                                set.weight || 0
-                            );
-
-
-                        if (
-                            weight >
-                            maxWeight
-                        ) {
-
-                            maxWeight =
-                                weight;
-
-                        }
-
+                    result.push({
+                        date: workout.workoutDate,
+                        weight: maxWeight
                     });
 
-
-                    if (maxWeight > 0) {
-
-                        result.push({
-
-                            date:
-                                workout.workoutDate,
-
-                            weight:
-                                maxWeight
-
-                        });
-
-                    }
-
                 }
-            );
+
+            });
 
         });
 
 
-        // Oldest → newest
         result.sort(
             (a, b) =>
                 new Date(a.date) -
@@ -349,504 +367,717 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // =====================================
+    // =====================================================
     // DRAW CHART
-    // =====================================
+    // =====================================================
 
-    function drawChart(
-        data,
-        exerciseName
-    ) {
+    function drawChart(data, exerciseName) {
 
-        const ctx =
-            canvas.getContext("2d");
-
-
-        const container =
-            canvas.parentElement;
-
-
-        const width =
-            container.clientWidth;
-
-
-        const height =
-            450;
-
-
-        canvas.width =
-            width * 2;
-
-        canvas.height =
-            height * 2;
-
-
-        canvas.style.width =
-            width + "px";
-
-        canvas.style.height =
-            height + "px";
-
-
-        ctx.setTransform(
-            1,
-            0,
-            0,
-            1,
-            0,
-            0
-        );
-
-
-        ctx.scale(
-            2,
-            2
-        );
-
-
-        ctx.clearRect(
-            0,
-            0,
-            width,
-            height
-        );
-
-
-        // =================================
-        // GRAPH SETTINGS
-        // =================================
-
-        const left =
-            70;
-
-        const right =
-            30;
-
-        const top =
-            60;
-
-        const bottom =
-            60;
-
-
-        const graphWidth =
-            width -
-            left -
-            right;
-
-
-        const graphHeight =
-            height -
-            top -
-            bottom;
-
-
-        const weights =
-            data.map(
-                item => item.weight
-            );
-
-
-        const maxWeight =
-            Math.max(...weights);
-
-
-        const minWeight =
-            Math.min(...weights);
-
-
-        const graphMin =
-            Math.max(
-                0,
-                Math.floor(
-                    minWeight - 10
-                )
-            );
-
-
-        const graphMax =
-            Math.ceil(
-                maxWeight + 10
-            );
-
-
-        const range =
-            Math.max(
-                graphMax -
-                graphMin,
-                10
-            );
-
-
-        // =================================
-        // BACKGROUND
-        // =================================
-
-        ctx.fillStyle =
-            "#0b1220";
-
-        ctx.fillRect(
-            0,
-            0,
-            width,
-            height
-        );
-
-
-        // =================================
-        // TITLE
-        // =================================
-
-        ctx.fillStyle =
-            "#ffffff";
-
-        ctx.font =
-            "bold 20px Arial";
-
-        ctx.textAlign =
-            "left";
-
-        ctx.fillText(
-            `${exerciseName} - Maximum Weight`,
-            left,
-            30
-        );
-
-
-        // =================================
-        // GRID
-        // =================================
-
-        ctx.strokeStyle =
-            "#263244";
-
-        ctx.lineWidth =
-            1;
-
-
-        for (
-            let i = 0;
-            i <= 5;
-            i++
-        ) {
-
-            const y =
-                top +
-                (
-                    graphHeight /
-                    5
-                ) * i;
-
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                left,
-                y
-            );
-
-            ctx.lineTo(
-                width - right,
-                y
-            );
-
-            ctx.stroke();
-
-
-            const weight =
-                graphMax -
-                (
-                    range /
-                    5
-                ) * i;
-
-
-            ctx.fillStyle =
-                "#b8c0cc";
-
-            ctx.font =
-                "13px Arial";
-
-            ctx.textAlign =
-                "right";
-
-            ctx.fillText(
-                `${Math.round(weight)} kg`,
-                left - 10,
-                y + 5
-            );
-
+        if (!canvas) {
+            return;
         }
 
 
-        // =================================
-        // POINTS
-        // =================================
+        if (typeof Chart === "undefined") {
 
-        const points =
-            data.map(
-                (item, index) => {
+            console.error(
+                "Chart.js was not loaded."
+            );
 
-                    let x;
+            return;
+        }
 
 
-                    if (
-                        data.length === 1
-                    ) {
+        if (progressChart) {
 
-                        x =
-                            left +
-                            graphWidth /
-                            2;
+            progressChart.destroy();
 
-                    } else {
+            progressChart = null;
+        }
 
-                        x =
-                            left +
-                            (
-                                graphWidth /
-                                (
-                                    data.length -
-                                    1
-                                )
-                            ) *
-                            index;
+
+        if (chartEmpty) {
+            chartEmpty.style.display = "none";
+        }
+
+
+        const ctx = canvas.getContext("2d");
+
+
+        const labels = data.map(item =>
+            formatShortDate(item.date)
+        );
+
+
+        const values = data.map(item =>
+            Number(item.weight)
+        );
+
+
+        progressChart = new Chart(ctx, {
+
+            type: "line",
+
+            data: {
+
+                labels,
+
+                datasets: [
+
+                    {
+                        label:
+                            `${exerciseName} - Maximum Weight`,
+
+                        data: values,
+
+                        tension: 0.3,
+
+                        borderWidth: 3,
+
+                        pointRadius: 5,
+
+                        pointHoverRadius: 7,
+
+                        fill: false
+                    }
+
+                ]
+            },
+
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+
+                interaction: {
+                    intersect: false,
+                    mode: "index"
+                },
+
+
+                plugins: {
+
+                    legend: {
+                        display: true
+                    },
+
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                return (
+                                    ` ${context.parsed.y} kg`
+                                );
+
+                            }
+
+                        }
 
                     }
 
-
-                    const y =
-                        top +
-                        graphHeight -
-                        (
-                            (
-                                item.weight -
-                                graphMin
-                            ) /
-                            range
-                        ) *
-                        graphHeight;
+                },
 
 
-                    return {
-                        x,
-                        y,
-                        weight:
-                            item.weight,
-                        date:
-                            item.date
-                    };
+                scales: {
 
-                }
-            );
+                    y: {
 
+                        beginAtZero: true,
 
-        // =================================
-        // LINE
-        // =================================
+                        title: {
 
-        if (points.length > 1) {
+                            display: true,
 
-            ctx.strokeStyle =
-                "#4da3ff";
+                            text: "Weight (kg)"
+                        }
 
-            ctx.lineWidth =
-                4;
-
-            ctx.beginPath();
+                    },
 
 
-            points.forEach(
-                (point, index) => {
+                    x: {
 
-                    if (index === 0) {
+                        title: {
 
-                        ctx.moveTo(
-                            point.x,
-                            point.y
-                        );
+                            display: true,
 
-                    } else {
-
-                        ctx.lineTo(
-                            point.x,
-                            point.y
-                        );
+                            text: "Workout Date"
+                        }
 
                     }
 
                 }
-            );
 
-
-            ctx.stroke();
-
-        }
-
-
-        // =================================
-        // POINTS
-        // =================================
-
-        points.forEach(point => {
-
-            ctx.beginPath();
-
-            ctx.arc(
-                point.x,
-                point.y,
-                7,
-                0,
-                Math.PI * 2
-            );
-
-
-            ctx.fillStyle =
-                "#ffffff";
-
-            ctx.fill();
-
-
-            ctx.strokeStyle =
-                "#4da3ff";
-
-            ctx.lineWidth =
-                3;
-
-            ctx.stroke();
-
-
-            // Weight
-            ctx.fillStyle =
-                "#ffffff";
-
-            ctx.font =
-                "bold 13px Arial";
-
-            ctx.textAlign =
-                "center";
-
-            ctx.fillText(
-                `${point.weight} kg`,
-                point.x,
-                point.y - 15
-            );
-
-
-            // Date
-            ctx.fillStyle =
-                "#9ca3af";
-
-            ctx.font =
-                "12px Arial";
-
-            ctx.fillText(
-                formatDate(point.date),
-                point.x,
-                height - 20
-            );
+            }
 
         });
-
     }
 
 
-    // =====================================
-    // SUMMARY
-    // =====================================
+    // =====================================================
+    // UPDATE METRICS
+    // =====================================================
 
-    function showSummary(data) {
+    function updateMetrics(data) {
 
-        const first =
-            data[0];
+        const weights = data.map(item =>
+            Number(item.weight)
+        );
+
+
+        const startingWeight = weights[0];
+
+        const bestWeight = Math.max(
+            ...weights
+        );
+
+        const latestWeight =
+            weights[weights.length - 1];
+
+
+        const improvement =
+            latestWeight -
+            startingWeight;
+
+
+        if (progressBest) {
+
+            progressBest.textContent =
+                `${bestWeight.toFixed(1)} kg`;
+        }
+
+
+        if (progressStarting) {
+
+            progressStarting.textContent =
+                `${startingWeight.toFixed(1)} kg`;
+        }
+
+
+        if (progressImprovement) {
+
+            if (improvement > 0) {
+
+                progressImprovement.textContent =
+                    `+${improvement.toFixed(1)} kg`;
+
+            } else if (improvement < 0) {
+
+                progressImprovement.textContent =
+                    `${improvement.toFixed(1)} kg`;
+
+            } else {
+
+                progressImprovement.textContent =
+                    "No change";
+            }
+        }
+
+
+        if (progressWorkoutCount) {
+
+            progressWorkoutCount.textContent =
+                data.length;
+        }
+    }
+
+
+    // =====================================================
+    // PROFESSIONAL PERFORMANCE ANALYSIS
+    // =====================================================
+
+    function showSummary(data, exerciseName) {
+
+        const first = data[0];
 
         const latest =
             data[data.length - 1];
 
 
-        const difference =
-            latest.weight -
-            first.weight;
+        const weights = data.map(item =>
+            Number(item.weight)
+        );
 
 
-        let percentage = 0;
+        const bestWeight =
+            Math.max(...weights);
 
 
-        if (first.weight > 0) {
+        const lowestWeight =
+            Math.min(...weights);
 
-            percentage =
+
+        const firstWeight =
+            Number(first.weight);
+
+
+        const latestWeight =
+            Number(latest.weight);
+
+
+        const totalSessions =
+            data.length;
+
+
+        // -------------------------------------------------
+        // OVERALL IMPROVEMENT
+        // -------------------------------------------------
+
+        const improvement =
+            latestWeight -
+            firstWeight;
+
+
+        let percentageChange = 0;
+
+
+        if (firstWeight > 0) {
+
+            percentageChange =
                 (
-                    difference /
-                    first.weight
+                    improvement /
+                    firstWeight
                 ) * 100;
-
         }
 
 
-        let progressText;
+        // -------------------------------------------------
+        // STATUS
+        // -------------------------------------------------
+
+        let status = "Maintaining";
 
 
-        if (difference > 0) {
+        if (improvement > 0) {
 
-            progressText =
-                `+${difference.toFixed(1)} kg`;
+            status = "Improving";
 
-        } else if (difference < 0) {
+        } else if (improvement < 0) {
 
-            progressText =
-                `${difference.toFixed(1)} kg`;
+            status = "Needs Attention";
+        }
+
+
+        // -------------------------------------------------
+        // BEST SESSION
+        // -------------------------------------------------
+
+        const bestSession =
+            data.reduce(
+                (best, current) =>
+                    Number(current.weight) >
+                    Number(best.weight)
+                        ? current
+                        : best,
+                data[0]
+            );
+
+
+        // -------------------------------------------------
+        // RECENT TREND
+        // -------------------------------------------------
+
+        let recentTrend = "Stable";
+
+
+        if (data.length >= 3) {
+
+            const recent =
+                data
+                    .slice(-3)
+                    .map(item =>
+                        Number(item.weight)
+                    );
+
+
+            const recentChange =
+                recent[recent.length - 1] -
+                recent[0];
+
+
+            if (recentChange > 0) {
+
+                recentTrend = "Positive";
+
+            } else if (recentChange < 0) {
+
+                recentTrend = "Negative";
+            }
+        }
+
+
+        // -------------------------------------------------
+        // PERFORMANCE SCORE
+        // -------------------------------------------------
+
+        let score = 50;
+
+
+        if (improvement > 0) {
+
+            score += 20;
+
+        } else if (improvement < 0) {
+
+            score -= 15;
+        }
+
+
+        if (totalSessions >= 10) {
+
+            score += 20;
+
+        } else if (totalSessions >= 5) {
+
+            score += 10;
+
+        } else if (totalSessions <= 2) {
+
+            score -= 5;
+        }
+
+
+        if (recentTrend === "Positive") {
+
+            score += 10;
+
+        } else if (recentTrend === "Negative") {
+
+            score -= 10;
+        }
+
+
+        score = Math.max(
+            0,
+            Math.min(100, score)
+        );
+
+
+        // -------------------------------------------------
+        // RECOMMENDATION
+        // -------------------------------------------------
+
+        let recommendation;
+
+
+        if (
+            improvement > 0 &&
+            recentTrend === "Positive"
+        ) {
+
+            recommendation =
+                "Your strength trend is positive. Continue progressive overload while maintaining good technique and recovery.";
+
+        } else if (
+            improvement > 0 &&
+            recentTrend === "Stable"
+        ) {
+
+            recommendation =
+                "You have improved overall, but your recent performances have stabilized. Consider a small, controlled increase in training load.";
+
+        } else if (
+            improvement === 0
+        ) {
+
+            recommendation =
+                "Your performance is currently stable. Focus on consistency, technique, recovery, and gradually increasing training stimulus.";
 
         } else {
 
-            progressText =
-                "No change";
-
+            recommendation =
+                "Your recent performance is below your starting level. Prioritize recovery, technique, consistency, and manageable training loads before increasing intensity.";
         }
 
 
+        // -------------------------------------------------
+        // CHANGE DISPLAY
+        // -------------------------------------------------
+
+        let progressDisplay = "No change";
+
+
+        if (improvement > 0) {
+
+            progressDisplay =
+                `+${improvement.toFixed(1)} kg`;
+
+        } else if (improvement < 0) {
+
+            progressDisplay =
+                `${improvement.toFixed(1)} kg`;
+        }
+
+
+        // -------------------------------------------------
+        // RENDER
+        // -------------------------------------------------
+
         summary.innerHTML = `
 
-            <div class="summary-card">
+            <div class="analysis-header">
 
-                <h3>First Weight</h3>
+                <div>
 
-                <strong>
-                    ${first.weight} kg
-                </strong>
+                    <span class="analysis-label">
+                        PERFORMANCE ANALYSIS
+                    </span>
 
-                <p>
-                    ${formatDate(first.date)}
-                </p>
+                    <h3>
+                        ${escapeHTML(exerciseName)}
+                    </h3>
+
+                    <p>
+                        Based on ${totalSessions}
+                        recorded
+                        ${
+                            totalSessions === 1
+                                ? "session"
+                                : "sessions"
+                        }
+                    </p>
+
+                </div>
+
+
+                <div class="performance-status">
+
+                    <span>STATUS</span>
+
+                    <strong>
+                        ${status}
+                    </strong>
+
+                </div>
 
             </div>
 
 
-            <div class="summary-card">
+            <div class="analysis-metrics">
 
-                <h3>Current Weight</h3>
+                <div class="analysis-metric">
 
-                <strong>
-                    ${latest.weight} kg
-                </strong>
+                    <span>Starting</span>
 
-                <p>
-                    ${formatDate(latest.date)}
-                </p>
+                    <strong>
+                        ${firstWeight.toFixed(1)} kg
+                    </strong>
+
+                    <small>
+                        ${formatDate(first.date)}
+                    </small>
+
+                </div>
+
+
+                <div class="analysis-metric">
+
+                    <span>Latest</span>
+
+                    <strong>
+                        ${latestWeight.toFixed(1)} kg
+                    </strong>
+
+                    <small>
+                        ${formatDate(latest.date)}
+                    </small>
+
+                </div>
+
+
+                <div class="analysis-metric">
+
+                    <span>Personal Best</span>
+
+                    <strong>
+                        ${bestWeight.toFixed(1)} kg
+                    </strong>
+
+                    <small>
+                        ${formatDate(bestSession.date)}
+                    </small>
+
+                </div>
+
+
+                <div class="analysis-metric">
+
+                    <span>Overall Change</span>
+
+                    <strong>
+                        ${progressDisplay}
+                    </strong>
+
+                    <small>
+                        ${percentageChange.toFixed(1)}%
+                    </small>
+
+                </div>
 
             </div>
 
 
-            <div class="summary-card">
+            <div class="analysis-grid">
 
-                <h3>Progress</h3>
+                <div class="analysis-card">
 
-                <strong>
-                    ${progressText}
-                </strong>
+                    <span class="analysis-card-label">
+                        RECENT TREND
+                    </span>
 
-                <p>
-                    ${percentage.toFixed(1)}%
-                </p>
+                    <strong>
+                        ${recentTrend}
+                    </strong>
+
+                    <p>
+                        ${
+                            recentTrend === "Positive"
+                                ? "Your latest sessions show upward movement."
+                                : recentTrend === "Negative"
+                                    ? "Your latest sessions show a decline."
+                                    : "Your latest sessions are relatively stable."
+                        }
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card">
+
+                    <span class="analysis-card-label">
+                        BEST PERFORMANCE
+                    </span>
+
+                    <strong>
+                        ${bestWeight.toFixed(1)} kg
+                    </strong>
+
+                    <p>
+                        Your highest recorded weight
+                        for this exercise.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card">
+
+                    <span class="analysis-card-label">
+                        TRAINING SESSIONS
+                    </span>
+
+                    <strong>
+                        ${totalSessions}
+                    </strong>
+
+                    <p>
+                        Recorded sessions for this
+                        exercise in the selected period.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="performance-score">
+
+                <div>
+
+                    <span>
+                        PERFORMANCE SCORE
+                    </span>
+
+                    <strong>
+                        ${score}
+                        <small>/100</small>
+                    </strong>
+
+                </div>
+
+
+                <div class="score-bar">
+
+                    <div
+                        class="score-progress"
+                        style="width: ${score}%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="coach-insight">
+
+                <div class="coach-icon">
+                    💡
+                </div>
+
+                <div>
+
+                    <span>
+                        COACH INSIGHT
+                    </span>
+
+                    <p>
+                        ${escapeHTML(recommendation)}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="analysis-footer">
+
+                <div>
+
+                    <span>
+                        Lowest Recorded
+                    </span>
+
+                    <strong>
+                        ${lowestWeight.toFixed(1)} kg
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Best Session
+                    </span>
+
+                    <strong>
+                        ${formatDate(bestSession.date)}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Current vs Best
+                    </span>
+
+                    <strong>
+                        ${
+                            (
+                                latestWeight -
+                                bestWeight
+                            ).toFixed(1)
+                        } kg
+                    </strong>
+
+                </div>
 
             </div>
 
@@ -854,37 +1085,83 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // =====================================
-    // CLEAR CHART
-    // =====================================
+    // =====================================================
+    // CLEAR PROGRESS
+    // =====================================================
 
-    function clearChart() {
+    function clearProgress() {
 
-        const ctx =
-            canvas.getContext("2d");
+        clearChart();
 
-        ctx.setTransform(
-            1,
-            0,
-            0,
-            1,
-            0,
-            0
-        );
+        resetMetrics();
 
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
-
+        showEmptySummary();
     }
 
 
-    // =====================================
+    // =====================================================
+    // CLEAR CHART
+    // =====================================================
+
+    function clearChart() {
+
+        if (progressChart) {
+
+            progressChart.destroy();
+
+            progressChart = null;
+        }
+
+
+        if (canvas) {
+
+            const ctx =
+                canvas.getContext("2d");
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+        }
+
+
+        if (chartEmpty) {
+
+            chartEmpty.style.display =
+                "flex";
+        }
+    }
+
+
+    // =====================================================
+    // RESET METRICS
+    // =====================================================
+
+    function resetMetrics() {
+
+        if (progressBest) {
+            progressBest.textContent = "—";
+        }
+
+        if (progressStarting) {
+            progressStarting.textContent = "—";
+        }
+
+        if (progressImprovement) {
+            progressImprovement.textContent = "—";
+        }
+
+        if (progressWorkoutCount) {
+            progressWorkoutCount.textContent = "—";
+        }
+    }
+
+
+    // =====================================================
     // EMPTY SUMMARY
-    // =====================================
+    // =====================================================
 
     function showEmptySummary() {
 
@@ -907,14 +1184,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // =====================================
+    // =====================================================
     // DATE FORMAT
-    // =====================================
+    // =====================================================
 
     function formatDate(dateString) {
 
         const date =
             new Date(dateString);
+
 
         return date.toLocaleDateString(
             "en-IN",
@@ -924,7 +1202,45 @@ document.addEventListener("DOMContentLoaded", async () => {
                 year: "numeric"
             }
         );
-
     }
+
+
+    function formatShortDate(dateString) {
+
+        const date =
+            new Date(dateString);
+
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short"
+            }
+        );
+    }
+
+
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
+
+    function escapeHTML(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            value ?? "";
+
+        return div.innerHTML;
+    }
+
+
+    // =====================================================
+    // START
+    // =====================================================
+
+    await loadWorkouts();
 
 });

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profile | Gym Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="logo">
+            <a href="dashboard.html">GYM TRACKER</a>
+        </div>
+
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="plans.html">Workout Plans</a>
+            <a href="program.html">Programs</a>
+            <a href="workout.html">Log Workout</a>
+            <a href="history.html">History</a>
+            <a href="progress.html">Progress</a>
+            <a href="profile.html" class="active">Profile</a>
+            <button id="logoutButton" class="logout-btn">Logout</button>
+        </div>
+
+    </nav>
+
+
+    <!-- PROFILE PAGE -->
+    <main class="profile-page">
+
+        <!-- PAGE HEADER -->
+        <section class="page-header">
+
+            <div>
+                <span class="page-label">ACCOUNT</span>
+
+                <h1>My Profile</h1>
+
+                <p>
+                    Manage your account information and security.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- PROFILE GRID -->
+        <section class="profile-grid">
+
+            <!-- PROFILE INFORMATION -->
+            <div class="form-card profile-card">
+
+                <div class="card-header">
+                    <h2>Profile Information</h2>
+
+                    <p>
+                        Your personal account information.
+                    </p>
+                </div>
+
+
+                <form id="profileForm">
+
+                    <!-- FULL NAME -->
+                    <div class="form-group">
+
+                        <label for="fullName">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            placeholder="Enter your full name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- USERNAME -->
+                    <div class="form-group">
+
+                        <label for="username">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Username"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn primary-btn"
+                        id="saveProfileButton"
+                    >
+                        Save Changes
+                    </button>
+
+
+                    <p
+                        id="profileMessage"
+                        class="form-message"
+                    ></p>
+
+                </form>
+
+            </div>
+
+
+            <!-- ACCOUNT INFORMATION -->
+            <div class="form-card profile-card">
+
+                <div class="card-header">
+
+                    <h2>Account Information</h2>
+
+                    <p>
+                        Information about your Gym Tracker account.
+                    </p>
+
+                </div>
+
+
+                <div class="profile-info-list">
+
+                    <div class="profile-info-item">
+
+                        <span class="profile-info-label">
+                            Account ID
+                        </span>
+
+                        <strong id="accountId">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="profile-info-item">
+
+                        <span class="profile-info-label">
+                            Member Since
+                        </span>
+
+                        <strong id="memberSince">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="profile-info-item">
+
+                        <span class="profile-info-label">
+                            Username
+                        </span>
+
+                        <strong id="accountUsername">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="profile-info-item">
+
+                        <span class="profile-info-label">
+                            Email
+                        </span>
+
+                        <strong id="accountEmail">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHANGE PASSWORD -->
+            <div class="form-card profile-card">
+
+                <div class="card-header">
+
+                    <h2>Change Password</h2>
+
+                    <p>
+                        Keep your account secure with a strong password.
+                    </p>
+
+                </div>
+
+
+                <form id="passwordForm">
+
+                    <div class="form-group">
+
+                        <label for="currentPassword">
+                            Current Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="currentPassword"
+                            placeholder="Enter current password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="newPassword">
+                            New Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="newPassword"
+                            placeholder="Enter new password"
+                            minlength="6"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="confirmPassword">
+                            Confirm New Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="Confirm new password"
+                            minlength="6"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn primary-btn"
+                        id="changePasswordButton"
+                    >
+                        Change Password
+                    </button>
+
+
+                    <p
+                        id="passwordMessage"
+                        class="form-message"
+                    ></p>
+
+                </form>
+
+            </div>
+
+
+            <!-- DANGER ZONE -->
+            <div class="form-card profile-card danger-card">
+
+                <div class="card-header">
+
+                    <h2>Danger Zone</h2>
+
+                    <p>
+                        Permanently delete your Gym Tracker account
+                        and all associated workout data.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn delete-btn"
+                    id="deleteAccountButton"
+                >
+                    Delete Account
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="js/profile.js"></script>
+
+</body>
+</html>

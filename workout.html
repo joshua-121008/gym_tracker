@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Gym | Log Workout</title>
 
-    <!-- Main CSS -->
-   <link rel="stylesheet" href="style.css">
-</head>`
+    <link rel="stylesheet" href="style.css">
+</head>
 
 <body>
 
-    <!-- Navigation -->
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
     <header class="navbar">
 
         <div class="logo">
@@ -25,40 +28,75 @@
             <a href="workout.html" class="active">Log Workout</a>
             <a href="history.html">History</a>
             <a href="progress.html">Progress</a>
-            <button id="logoutButton" class="logout-btn">Logout</button>
+            <a href="profile.html">Profile</a>
+
+            <button
+                id="logoutButton"
+                class="logout-btn"
+                type="button"
+            >
+                Logout
+            </button>
         </nav>
 
     </header>
 
 
-    <!-- Main Content -->
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
     <main class="workout-page">
 
-        <!-- Page Header -->
+        <!-- =========================
+             PAGE HEADER
+        ========================== -->
+
         <section class="page-header">
 
             <div>
-                <p class="page-label">TRAINING LOG</p>
 
-                <h1>Log Workout</h1>
+                <p class="page-label">
+                    TRAINING LOG
+                </p>
+
+                <h1>
+                    Log Workout
+                </h1>
 
                 <p>
-                    Record your exercises, sets, reps and weight.
+                    Record your training and track your
+                    performance over time.
                 </p>
+
             </div>
 
         </section>
 
 
-        <!-- Workout Information -->
+        <!-- =========================
+             WORKOUT DETAILS
+        ========================== -->
+
         <section class="workout-info-card">
 
             <div class="card-header">
 
                 <div>
-                    <p class="card-label">WORKOUT DETAILS</p>
 
-                    <h2>Start Your Workout</h2>
+                    <p class="card-label">
+                        WORKOUT DETAILS
+                    </p>
+
+                    <h2>
+                        Start Your Workout
+                    </h2>
+
+                    <p class="card-description">
+                        Add the basic information about today's
+                        training session.
+                    </p>
+
                 </div>
 
             </div>
@@ -66,75 +104,216 @@
 
             <form id="workoutForm">
 
-                <!-- Workout Date -->
-                <div class="form-group">
+                <div class="workout-details-grid">
 
-                    <label for="workoutDate">
-                        Workout Date
-                    </label>
+                    <!-- Date -->
 
-                    <input
-                        type="date"
-                        id="workoutDate"
-                        name="workoutDate"
-                        required
-                    >
+                    <div class="form-group">
+
+                        <label for="workoutDate">
+                            Workout Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="workoutDate"
+                            name="workoutDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Plan -->
+
+                    <div class="form-group">
+
+                        <label for="workoutPlan">
+                            Workout Plan
+                        </label>
+
+                        <select
+                            id="workoutPlan"
+                            name="workoutPlan"
+                            required
+                        >
+
+                            <option value="">
+                                Select a workout plan
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Workout Name -->
+
+                    <div class="form-group workout-name-field">
+
+                        <label for="workoutName">
+                            Workout Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="workoutName"
+                            name="workoutName"
+                            placeholder="Example: Chest & Triceps"
+                            required
+                        >
+
+                    </div>
 
                 </div>
 
 
-                <!-- Workout Plan -->
-                <div class="form-group">
+                <!-- =========================
+                     LIVE WORKOUT SUMMARY
+                ========================== -->
 
-                    <label for="workoutPlan">
-                        Workout Plan
-                    </label>
-
-                    <select
-                        id="workoutPlan"
-                        name="workoutPlan"
-                        required
-                    >
-                        <option value="">
-                            Select a workout plan
-                        </option>
-                    </select>
-
-                </div>
-
-
-                <!-- Workout Name -->
-                <div class="form-group">
-
-                    <label for="workoutName">
-                        Workout Name
-                    </label>
-
-                    <input
-                        type="text"
-                        id="workoutName"
-                        name="workoutName"
-                        placeholder="Example: Chest & Triceps"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- Exercises -->
-                <div class="exercise-section">
+                <section class="workout-summary-section">
 
                     <div class="section-heading">
 
                         <div>
+
                             <p class="section-label">
-                                EXERCISES
+                                LIVE SUMMARY
+                            </p>
+
+                            <h2>
+                                Today's Statistics
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="workout-summary-grid">
+
+                        <!-- Exercises -->
+
+                        <div class="workout-summary-card">
+
+                            <div class="summary-icon">
+                                🏋️
+                            </div>
+
+                            <div>
+
+                                <p>
+                                    Exercises
+                                </p>
+
+                                <h3 id="workoutTotalExercises">
+                                    0
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Sets -->
+
+                        <div class="workout-summary-card">
+
+                            <div class="summary-icon">
+                                📊
+                            </div>
+
+                            <div>
+
+                                <p>
+                                    Total Sets
+                                </p>
+
+                                <h3 id="workoutTotalSets">
+                                    0
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Reps -->
+
+                        <div class="workout-summary-card">
+
+                            <div class="summary-icon">
+                                🔢
+                            </div>
+
+                            <div>
+
+                                <p>
+                                    Total Reps
+                                </p>
+
+                                <h3 id="workoutTotalReps">
+                                    0
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Volume -->
+
+                        <div class="workout-summary-card">
+
+                            <div class="summary-icon">
+                                ⚡
+                            </div>
+
+                            <div>
+
+                                <p>
+                                    Total Volume
+                                </p>
+
+                                <h3 id="workoutTotalVolume">
+                                    0 kg
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     EXERCISES
+                ========================== -->
+
+                <section class="exercise-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <p class="section-label">
+                                TRAINING
                             </p>
 
                             <h2>
                                 Today's Exercises
                             </h2>
+
+                            <p class="section-description">
+                                Add each exercise and record every
+                                working set.
+                            </p>
+
                         </div>
+
 
                         <button
                             type="button"
@@ -148,26 +327,40 @@
 
 
                     <!-- Exercise List -->
+
                     <div id="exerciseList">
 
-                        <!-- Exercise will be added by JavaScript -->
+                        <!-- Default Exercise -->
 
                         <div
                             class="exercise-card"
                             data-exercise-index="0"
                         >
 
+                            <!-- Exercise Header -->
+
                             <div class="exercise-header">
 
-                                <div>
+                                <div class="exercise-title">
+
                                     <span class="exercise-number">
                                         01
                                     </span>
 
-                                    <h3>
-                                        Exercise 1
-                                    </h3>
+                                    <div>
+
+                                        <p class="exercise-label">
+                                            EXERCISE
+                                        </p>
+
+                                        <h3>
+                                            Exercise 1
+                                        </h3>
+
+                                    </div>
+
                                 </div>
+
 
                                 <button
                                     type="button"
@@ -181,6 +374,7 @@
 
 
                             <!-- Exercise Name -->
+
                             <div class="form-group">
 
                                 <label>
@@ -198,11 +392,23 @@
 
 
                             <!-- Sets -->
+
                             <div class="sets-container">
 
                                 <div class="sets-header">
 
-                                    <h4>Sets</h4>
+                                    <div>
+
+                                        <p class="sets-label">
+                                            PERFORMANCE
+                                        </p>
+
+                                        <h4>
+                                            Sets
+                                        </h4>
+
+                                    </div>
+
 
                                     <button
                                         type="button"
@@ -214,14 +420,42 @@
                                 </div>
 
 
+                                <!-- Set Table Header -->
+
+                                <div class="set-table-header">
+
+                                    <span>
+                                        SET
+                                    </span>
+
+                                    <span>
+                                        WEIGHT
+                                    </span>
+
+                                    <span>
+                                        REPS
+                                    </span>
+
+                                    <span>
+                                        VOLUME
+                                    </span>
+
+                                    <span>
+                                    </span>
+
+                                </div>
+
+
+                                <!-- Set List -->
+
                                 <div class="set-list">
 
-                                    <!-- Set 1 -->
                                     <div class="set-row">
 
                                         <span class="set-number">
                                             1
                                         </span>
+
 
                                         <div class="set-input">
 
@@ -251,11 +485,17 @@
                                                 type="number"
                                                 class="reps-input"
                                                 min="1"
+                                                step="1"
                                                 placeholder="0"
                                                 required
                                             >
 
                                         </div>
+
+
+                                        <span class="set-volume">
+                                            0 kg
+                                        </span>
 
 
                                         <button
@@ -272,38 +512,84 @@
 
                             </div>
 
+
+                            <!-- Exercise Summary -->
+
+                            <div class="exercise-summary">
+
+                                <span>
+                                    Exercise Volume
+                                </span>
+
+                                <strong class="exercise-volume">
+                                    0 kg
+                                </strong>
+
+                            </div>
+
                         </div>
 
                     </div>
 
-                </div>
+                </section>
 
 
-                <!-- Notes -->
-                <div class="form-group">
+                <!-- =========================
+                     WORKOUT NOTES
+                ========================== -->
 
-                    <label for="workoutNotes">
-                        Workout Notes
-                    </label>
+                <section class="workout-notes-section">
 
-                    <textarea
-                        id="workoutNotes"
-                        name="workoutNotes"
-                        rows="4"
-                        placeholder="How did your workout feel? Add any notes here..."
-                    ></textarea>
+                    <div class="section-heading">
 
-                </div>
+                        <div>
+
+                            <p class="section-label">
+                                REFLECTION
+                            </p>
+
+                            <h2>
+                                Workout Notes
+                            </h2>
+
+                            <p class="section-description">
+                                Record how the workout felt or add
+                                anything you want to remember.
+                            </p>
+
+                        </div>
+
+                    </div>
 
 
-                <!-- Message -->
+                    <div class="form-group">
+
+                        <textarea
+                            id="workoutNotes"
+                            name="workoutNotes"
+                            rows="5"
+                            placeholder="Example: Felt strong today. Increased bench press by 5 kg..."
+                        ></textarea>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     MESSAGE
+                ========================== -->
+
                 <p
                     id="workoutMessage"
                     class="form-message"
                 ></p>
 
 
-                <!-- Form Actions -->
+                <!-- =========================
+                     FORM ACTIONS
+                ========================== -->
+
                 <div class="form-actions">
 
                     <a
@@ -328,7 +614,10 @@
         </section>
 
 
-        <!-- Workout Tips -->
+        <!-- =========================
+             TRAIN SMART
+        ========================== -->
+
         <section class="info-card">
 
             <div class="info-content">
@@ -343,9 +632,10 @@
                 </h2>
 
                 <p>
-                    Recording your weight and reps consistently
-                    allows the system to analyze your performance
-                    and show your strength progression over time.
+                    Consistently recording your weight and reps
+                    allows GYM to analyze your performance,
+                    calculate training volume and show your
+                    strength progression over time.
                 </p>
 
             </div>
@@ -355,7 +645,10 @@
     </main>
 
 
-    <!-- Footer -->
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
     <footer>
 
         <p>
@@ -365,9 +658,13 @@
     </footer>
 
 
-    <!-- Workout JavaScript -->
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
     <script src="js/workout.js"></script>
 
 </body>
+
 </html>
 
