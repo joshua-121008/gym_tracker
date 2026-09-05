@@ -5,8 +5,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     // =====================================================
 
     const token = localStorage.getItem("gymToken");
+    const userData = localStorage.getItem("gymCurrentUser");
 
-    if (!token) {
+    if (!token || !userData) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        JSON.parse(userData);
+    } catch (error) {
+        localStorage.removeItem("gymToken");
+        localStorage.removeItem("gymCurrentUser");
         window.location.href = "login.html";
         return;
     }
@@ -17,54 +27,74 @@ document.addEventListener("DOMContentLoaded", async () => {
     // =====================================================
 
     const historyContainer =
-        document.getElementById("historyContainer");
+        document.querySelector("#historyContainer");
 
     const emptyHistory =
-        document.getElementById("emptyHistory");
+        document.querySelector("#emptyHistory");
 
-    const searchInput =
-        document.getElementById("searchWorkout");
+    const searchWorkout =
+        document.querySelector("#searchWorkout");
 
     const filterDate =
-        document.getElementById("filterDate");
+        document.querySelector("#filterDate");
 
     const filterExercise =
-        document.getElementById("filterExercise");
+        document.querySelector("#filterExercise");
 
     const clearFiltersButton =
-        document.getElementById("clearFiltersButton");
-
-    const workoutCount =
-        document.getElementById("workoutCount");
+        document.querySelector("#clearFiltersButton");
 
     const logoutButton =
-        document.getElementById("logoutButton");
+        document.querySelector("#logoutButton");
 
-
-    // Modal
     const workoutModal =
-        document.getElementById("workoutModal");
+        document.querySelector("#workoutModal");
 
     const closeWorkoutModal =
-        document.getElementById("closeWorkoutModal");
-
-    const modalWorkoutName =
-        document.getElementById("modalWorkoutName");
-
-    const modalWorkoutDate =
-        document.getElementById("modalWorkoutDate");
-
-    const modalWorkoutDuration =
-        document.getElementById("modalWorkoutDuration");
-
-    const modalExerciseList =
-        document.getElementById("modalExerciseList");
-
-    const modalWorkoutNotes =
-        document.getElementById("modalWorkoutNotes");
+        document.querySelector("#closeWorkoutModal");
 
     const deleteWorkoutButton =
-        document.getElementById("deleteWorkoutButton");
+        document.querySelector("#deleteWorkoutButton");
+
+
+    // =====================================================
+    // STAT ELEMENTS
+    // =====================================================
+
+    const totalWorkoutsElement =
+        document.querySelector("#historyTotalWorkouts");
+
+    const totalExercisesElement =
+        document.querySelector("#historyTotalExercises");
+
+    const totalSetsElement =
+        document.querySelector("#historyTotalSets");
+
+    const totalWeightElement =
+        document.querySelector("#historyTotalWeight");
+
+    const workoutCountElement =
+        document.querySelector("#workoutCount");
+
+
+    // =====================================================
+    // MODAL ELEMENTS
+    // =====================================================
+
+    const modalWorkoutName =
+        document.querySelector("#modalWorkoutName");
+
+    const modalWorkoutDate =
+        document.querySelector("#modalWorkoutDate");
+
+    const modalWorkoutDuration =
+        document.querySelector("#modalWorkoutDuration");
+
+    const modalExerciseList =
+        document.querySelector("#modalExerciseList");
+
+    const modalWorkoutNotes =
+        document.querySelector("#modalWorkoutNotes");
 
 
     // =====================================================
@@ -73,26 +103,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let workouts = [];
 
-    let selectedWorkoutId = null;
+    let selectedWorkout = null;
 
 
     // =====================================================
     // LOGOUT
     // =====================================================
 
-    if (logoutButton) {
+    function logout() {
 
+        localStorage.removeItem("gymToken");
+        localStorage.removeItem("gymCurrentUser");
+
+        window.location.href = "login.html";
+    }
+
+    if (logoutButton) {
         logoutButton.addEventListener(
             "click",
-            () => {
-
-                localStorage.removeItem("gymToken");
-                localStorage.removeItem("gymCurrentUser");
-
-                window.location.href = "login.html";
-
-            }
+            logout
         );
+    }
+
+
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
+
+    function escapeHTML(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
 
@@ -106,8 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return "-";
         }
 
-        const date =
-            new Date(dateValue);
+        const date = new Date(dateValue);
 
         if (Number.isNaN(date.getTime())) {
             return dateValue;
@@ -125,83 +173,119 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // =====================================================
-    // CALCULATE WORKOUT VOLUME
+    // CALCULATE WORKOUT STATS
     // =====================================================
 
-    function calculateWorkoutVolume(workout) {
+    function getWorkoutStats(workout) {
 
+        let exercises = 0;
+        let sets = 0;
+        let reps = 0;
         let volume = 0;
 
-        workout.exercises?.forEach(
-            exercise => {
+        if (Array.isArray(workout.exercises)) {
 
-                exercise.sets?.forEach(
-                    set => {
+            exercises =
+                workout.exercises.length;
+
+
+            workout.exercises.forEach(
+                exercise => {
+
+                    if (!Array.isArray(exercise.sets)) {
+                        return;
+                    }
+
+                    sets +=
+                        exercise.sets.length;
+
+
+                    exercise.sets.forEach(set => {
 
                         const weight =
                             Number(set.weight) || 0;
 
-                        const reps =
+                        const setReps =
                             Number(set.reps) || 0;
+
+                        reps += setReps;
 
                         volume +=
-                            weight * reps;
+                            weight * setReps;
+                    });
+                }
+            );
+        }
 
-                    }
-                );
-
-            }
-        );
-
-        return volume;
+        return {
+            exercises,
+            sets,
+            reps,
+            volume
+        };
     }
 
 
     // =====================================================
-    // CALCULATE WORKOUT SETS
+    // UPDATE STATISTICS
     // =====================================================
 
-    function calculateWorkoutSets(workout) {
+    function updateStatistics(list) {
 
-        let sets = 0;
-
-        workout.exercises?.forEach(
-            exercise => {
-
-                sets +=
-                    exercise.sets?.length || 0;
-
-            }
-        );
-
-        return sets;
-    }
+        let totalExercises = 0;
+        let totalSets = 0;
+        let totalWeight = 0;
 
 
-    // =====================================================
-    // CALCULATE WORKOUT REPS
-    // =====================================================
+        list.forEach(workout => {
 
-    function calculateWorkoutReps(workout) {
+            const stats =
+                getWorkoutStats(workout);
 
-        let reps = 0;
+            totalExercises +=
+                stats.exercises;
 
-        workout.exercises?.forEach(
-            exercise => {
+            totalSets +=
+                stats.sets;
 
-                exercise.sets?.forEach(
-                    set => {
+            totalWeight +=
+                stats.volume;
+        });
 
-                        reps +=
-                            Number(set.reps) || 0;
 
-                    }
-                );
+        if (totalWorkoutsElement) {
+            totalWorkoutsElement.textContent =
+                list.length;
+        }
 
-            }
-        );
 
-        return reps;
+        if (totalExercisesElement) {
+            totalExercisesElement.textContent =
+                totalExercises;
+        }
+
+
+        if (totalSetsElement) {
+            totalSetsElement.textContent =
+                totalSets;
+        }
+
+
+        if (totalWeightElement) {
+            totalWeightElement.textContent =
+                `${totalWeight.toFixed(1)} kg`;
+        }
+
+
+        if (workoutCountElement) {
+
+            workoutCountElement.textContent =
+                `${list.length} ${
+                    list.length === 1
+                        ? "Workout"
+                        : "Workouts"
+                }`;
+        }
     }
 
 
@@ -227,18 +311,20 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
 
 
-            // ---------------------------------------------
-            // AUTH ERROR
-            // ---------------------------------------------
-
             if (
                 response.status === 401 ||
                 response.status === 403
             ) {
-
                 logout();
-
                 return;
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load workout history"
+                );
             }
 
 
@@ -246,155 +332,41 @@ document.addEventListener("DOMContentLoaded", async () => {
                 await response.json();
 
 
-            console.log(
-                "Workout API response:",
-                data
+            workouts =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+
+            populateExerciseFilter(
+                workouts
             );
 
 
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    "Failed to load workouts"
-                );
-            }
-
-
-            // Backend returns array directly
-            workouts = Array.isArray(data)
-                ? data
-                : [];
-
-
-            console.log(
-                "Number of workouts:",
-                workouts.length
+            updateStatistics(
+                workouts
             );
 
 
-            updateStatistics();
-
-            populateExerciseFilter();
-
-            renderWorkouts(workouts);
+            renderWorkouts(
+                workouts
+            );
 
 
         } catch (error) {
 
             console.error(
-                "History error:",
+                "Load workouts error:",
                 error
             );
 
 
-            historyContainer.innerHTML = `
-                <div class="empty-state">
+            workouts = [];
 
-                    <h3>
-                        Unable to load workout history
-                    </h3>
+            updateStatistics([]);
 
-                    <p>
-                        ${escapeHTML(
-                            error.message ||
-                            "Something went wrong."
-                        )}
-                    </p>
-
-                    <button
-                        type="button"
-                        class="btn primary-btn"
-                        onclick="location.reload()"
-                    >
-                        Try Again
-                    </button>
-
-                </div>
-            `;
+            renderWorkouts([]);
         }
-    }
-
-
-    // =====================================================
-    // UPDATE STATISTICS
-    // =====================================================
-
-    function updateStatistics() {
-
-        let totalExercises = 0;
-        let totalSets = 0;
-        let totalVolume = 0;
-
-
-        workouts.forEach(workout => {
-
-            totalExercises +=
-                workout.exercises?.length || 0;
-
-
-            totalSets +=
-                calculateWorkoutSets(workout);
-
-
-            totalVolume +=
-                calculateWorkoutVolume(workout);
-
-        });
-
-
-        const totalWorkouts =
-            workouts.length;
-
-
-        const totalWorkoutsElement =
-            document.getElementById(
-                "historyTotalWorkouts"
-            );
-
-        const totalExercisesElement =
-            document.getElementById(
-                "historyTotalExercises"
-            );
-
-        const totalSetsElement =
-            document.getElementById(
-                "historyTotalSets"
-            );
-
-        const totalWeightElement =
-            document.getElementById(
-                "historyTotalWeight"
-            );
-
-
-        if (totalWorkoutsElement) {
-
-            totalWorkoutsElement.textContent =
-                totalWorkouts;
-        }
-
-
-        if (totalExercisesElement) {
-
-            totalExercisesElement.textContent =
-                totalExercises;
-        }
-
-
-        if (totalSetsElement) {
-
-            totalSetsElement.textContent =
-                totalSets;
-        }
-
-
-        if (totalWeightElement) {
-
-            totalWeightElement.textContent =
-                `${totalVolume.toFixed(1)} kg`;
-        }
-
     }
 
 
@@ -402,7 +374,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // POPULATE EXERCISE FILTER
     // =====================================================
 
-    function populateExerciseFilter() {
+    function populateExerciseFilter(list) {
 
         if (!filterExercise) return;
 
@@ -411,26 +383,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             new Set();
 
 
-        workouts.forEach(workout => {
+        list.forEach(workout => {
 
-            workout.exercises?.forEach(
+            if (!Array.isArray(workout.exercises)) {
+                return;
+            }
+
+
+            workout.exercises.forEach(
                 exercise => {
 
                     if (exercise.name) {
 
                         exerciseNames.add(
-                            exercise.name
+                            exercise.name.trim()
                         );
-
                     }
-
                 }
             );
-
         });
 
 
-        const sortedExercises =
+        const sortedNames =
             [...exerciseNames].sort(
                 (a, b) =>
                     a.localeCompare(b)
@@ -444,26 +418,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
 
 
-        sortedExercises.forEach(
-            exerciseName => {
+        sortedNames.forEach(name => {
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+            const option =
+                document.createElement("option");
 
-                option.value =
-                    exerciseName;
+            option.value = name;
 
-                option.textContent =
-                    exerciseName;
+            option.textContent = name;
 
-                filterExercise.appendChild(
-                    option
-                );
-
-            }
-        );
+            filterExercise.appendChild(
+                option
+            );
+        });
     }
 
 
@@ -474,105 +441,90 @@ document.addEventListener("DOMContentLoaded", async () => {
     function filterWorkouts() {
 
         const search =
-            searchInput?.value
+            searchWorkout?.value
                 .trim()
                 .toLowerCase() || "";
 
 
-        const selectedDate =
+        const date =
             filterDate?.value || "";
 
 
-        const selectedExercise =
+        const exercise =
             filterExercise?.value
+                .trim()
                 .toLowerCase() || "";
 
 
         const filtered =
-            workouts.filter(
-                workout => {
+            workouts.filter(workout => {
 
-                    // -------------------------------
-                    // SEARCH
-                    // -------------------------------
+                // Search workout name
+                if (search) {
 
-                    const workoutName =
-                        (
-                            workout.workoutName ||
-                            ""
+                    const name =
+                        String(
+                            workout.workoutName || ""
                         ).toLowerCase();
 
 
-                    const notes =
-                        (
-                            workout.notes ||
-                            ""
-                        ).toLowerCase();
+                    if (!name.includes(search)) {
+                        return false;
+                    }
+                }
 
 
-                    const exerciseNames =
-                        (
-                            workout.exercises || []
-                        )
-                        .map(
-                            exercise =>
-                                exercise.name || ""
-                        )
-                        .join(" ")
-                        .toLowerCase();
-
-
-                    const matchesSearch =
-                        !search ||
-                        workoutName.includes(search) ||
-                        notes.includes(search) ||
-                        exerciseNames.includes(search);
-
-
-                    // -------------------------------
-                    // DATE
-                    // -------------------------------
+                // Date filter
+                if (date) {
 
                     const workoutDate =
-                        workout.workoutDate
-                            ? workout.workoutDate
-                                .substring(0, 10)
-                            : "";
+                        String(
+                            workout.workoutDate || ""
+                        ).split("T")[0];
 
 
-                    const matchesDate =
-                        !selectedDate ||
-                        workoutDate === selectedDate;
+                    if (workoutDate !== date) {
+                        return false;
+                    }
+                }
 
 
-                    // -------------------------------
-                    // EXERCISE
-                    // -------------------------------
+                // Exercise filter
+                if (exercise) {
 
-                    const matchesExercise =
-                        !selectedExercise ||
-                        (
-                            workout.exercises || []
-                        ).some(
-                            exercise =>
-                                (
-                                    exercise.name || ""
-                                ).toLowerCase() ===
-                                selectedExercise
+                    const hasExercise =
+                        Array.isArray(
+                            workout.exercises
+                        ) &&
+                        workout.exercises.some(
+                            item =>
+                                String(
+                                    item.name || ""
+                                )
+                                .trim()
+                                .toLowerCase() ===
+                                exercise
                         );
 
 
-                    return (
-                        matchesSearch &&
-                        matchesDate &&
-                        matchesExercise
-                    );
-
+                    if (!hasExercise) {
+                        return false;
+                    }
                 }
-            );
 
 
-        renderWorkouts(filtered);
+                return true;
+            });
+
+
+        updateStatistics(
+            filtered
+        );
+
+
+        renderWorkouts(
+            filtered
+        );
     }
 
 
@@ -580,308 +532,169 @@ document.addEventListener("DOMContentLoaded", async () => {
     // RENDER WORKOUTS
     // =====================================================
 
-    function renderWorkouts(workoutArray) {
+    function renderWorkouts(list) {
 
         if (!historyContainer) return;
 
 
-        // Remove previous cards
-        historyContainer
-            .querySelectorAll(".history-card")
-            .forEach(card => card.remove());
+        const existingCards =
+            historyContainer.querySelectorAll(
+                ".history-card"
+            );
 
 
-        // Update count
-        if (workoutCount) {
-
-            workoutCount.textContent =
-                `${workoutArray.length} ${
-                    workoutArray.length === 1
-                        ? "Workout"
-                        : "Workouts"
-                }`;
-        }
+        existingCards.forEach(card => {
+            card.remove();
+        });
 
 
-        // No results
-        if (!workoutArray.length) {
+        if (!list.length) {
 
             if (emptyHistory) {
-
                 emptyHistory.style.display =
                     "block";
-
-                emptyHistory.innerHTML = `
-                    <div class="empty-icon">
-                        +
-                    </div>
-
-                    <h3>
-                        No workouts found
-                    </h3>
-
-                    <p>
-                        Try changing your filters
-                        or log a new workout.
-                    </p>
-
-                    <a
-                        href="workout.html"
-                        class="btn primary-btn"
-                    >
-                        Log Workout
-                    </a>
-                `;
-
-                historyContainer.appendChild(
-                    emptyHistory
-                );
             }
 
             return;
         }
 
 
-        // Hide empty state
         if (emptyHistory) {
-
             emptyHistory.style.display =
                 "none";
         }
 
 
-        // Render cards
-        workoutArray.forEach(
-            workout => {
+        list.forEach(workout => {
 
-                const card =
-                    createWorkoutCard(
-                        workout
-                    );
-
-
-                historyContainer.appendChild(
-                    card
+            const stats =
+                getWorkoutStats(
+                    workout
                 );
 
-            }
-        );
-    }
+
+            const card =
+                document.createElement("article");
 
 
-    // =====================================================
-    // CREATE WORKOUT CARD
-    // =====================================================
-
-    function createWorkoutCard(workout) {
-
-        const card =
-            document.createElement("article");
+            card.className =
+                "history-card";
 
 
-        card.className =
-            "history-card";
+            const programHTML =
+                workout.programName
+                    ? `
+                        <span class="history-meta-badge">
+                            Program:
+                            ${escapeHTML(
+                                workout.programName
+                            )}
+                        </span>
+                    `
+                    : "";
 
 
-        const volume =
-            calculateWorkoutVolume(
-                workout
-            );
+            const planHTML =
+                workout.planName
+                    ? `
+                        <span class="history-meta-badge">
+                            Plan:
+                            ${escapeHTML(
+                                workout.planName
+                            )}
+                        </span>
+                    `
+                    : "";
 
 
-        const sets =
-            calculateWorkoutSets(
-                workout
-            );
+            card.innerHTML = `
+
+                <div class="history-card-main">
+
+                    <div class="history-card-info">
+
+                        <p class="history-card-label">
+                            WORKOUT
+                        </p>
+
+                        <h3>
+                            ${escapeHTML(
+                                workout.workoutName ||
+                                "Workout"
+                            )}
+                        </h3>
+
+                        <p class="history-card-date">
+                            ${formatDate(
+                                workout.workoutDate
+                            )}
+                        </p>
+
+                        <div class="history-meta">
+
+                            ${programHTML}
+
+                            ${planHTML}
+
+                        </div>
+
+                    </div>
 
 
-        const exercises =
-            workout.exercises?.length || 0;
+                    <div class="history-card-stats">
+
+                        <div>
+                            <strong>
+                                ${stats.exercises}
+                            </strong>
+
+                            <span>
+                                Exercises
+                            </span>
+                        </div>
 
 
-        let exercisesHTML = "";
+                        <div>
+                            <strong>
+                                ${stats.sets}
+                            </strong>
+
+                            <span>
+                                Sets
+                            </span>
+                        </div>
 
 
-        if (
-            workout.exercises &&
-            workout.exercises.length
-        ) {
+                        <div>
+                            <strong>
+                                ${stats.volume.toFixed(1)}
+                                kg
+                            </strong>
 
-            exercisesHTML =
-                workout.exercises
-                    .map(
-                        exercise => {
+                            <span>
+                                Volume
+                            </span>
+                        </div>
 
-                            const exerciseSets =
-                                exercise.sets || [];
+                    </div>
 
-
-                            const setText =
-                                exerciseSets
-                                    .map(
-                                        set =>
-                                            `${Number(set.weight) || 0} kg × ${
-                                                Number(set.reps) || 0
-                                            }`
-                                    )
-                                    .join("  •  ");
-
-
-                            return `
-                                <div class="history-exercise">
-
-                                    <div>
-                                        <div class="history-exercise-name">
-                                            ${escapeHTML(
-                                                exercise.name ||
-                                                "Unnamed Exercise"
-                                            )}
-                                        </div>
-
-                                        <div class="history-exercise-info">
-                                            ${
-                                                exerciseSets.length
-                                            } ${
-                                                exerciseSets.length === 1
-                                                    ? "set"
-                                                    : "sets"
-                                            }
-
-                                            ${
-                                                setText
-                                                    ? ` • ${escapeHTML(setText)}`
-                                                    : ""
-                                            }
-                                        </div>
-                                    </div>
-
-                                </div>
-                            `;
-                        }
-                    )
-                    .join("");
-
-        } else {
-
-            exercisesHTML = `
-                <p class="text-muted">
-                    No exercise data available.
-                </p>
-            `;
-        }
-
-
-        card.innerHTML = `
-
-            <div class="history-card-header">
-
-                <div>
-
-                    <h3>
-                        ${escapeHTML(
-                            workout.workoutName ||
-                            "Workout"
-                        )}
-                    </h3>
-
-                    <span class="history-date">
-                        ${formatDate(
-                            workout.workoutDate
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div class="card-actions">
 
                     <button
                         type="button"
                         class="btn secondary-btn view-workout"
+                        data-id="${workout.id}"
                     >
-                        View
+                        View Workout
                     </button>
 
                 </div>
-
-            </div>
-
-
-            <div class="history-summary">
-
-                <span class="badge badge-blue">
-                    ${exercises}
-                    ${
-                        exercises === 1
-                            ? " Exercise"
-                            : " Exercises"
-                    }
-                </span>
-
-                <span class="badge badge-blue">
-                    ${sets}
-                    ${
-                        sets === 1
-                            ? " Set"
-                            : " Sets"
-                    }
-                </span>
-
-                <span class="badge badge-green">
-                    ${volume.toFixed(1)} kg
-                </span>
-
-            </div>
+            `;
 
 
-            <div class="history-exercises">
-
-                ${exercisesHTML}
-
-            </div>
-
-
-            ${
-                workout.notes
-                    ? `
-                        <div class="history-notes">
-                            <strong>Notes</strong>
-                            <p>
-                                ${escapeHTML(
-                                    workout.notes
-                                )}
-                            </p>
-                        </div>
-                    `
-                    : ""
-            }
-
-        `;
-
-
-        // View button
-        const viewButton =
-            card.querySelector(
-                ".view-workout"
+            historyContainer.appendChild(
+                card
             );
-
-
-        if (viewButton) {
-
-            viewButton.addEventListener(
-                "click",
-                () => {
-
-                    openWorkoutModal(
-                        workout
-                    );
-
-                }
-            );
-        }
-
-
-        return card;
+        });
     }
 
 
@@ -891,11 +704,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function openWorkoutModal(workout) {
 
-        if (!workoutModal) return;
+        if (!workoutModal || !workout) {
+            return;
+        }
 
 
-        selectedWorkoutId =
-            workout.id;
+        selectedWorkout =
+            workout;
 
 
         if (modalWorkoutName) {
@@ -922,129 +737,271 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        if (modalWorkoutNotes) {
+        // -----------------------------------------------
+        // PROGRAM + PLAN
+        // -----------------------------------------------
 
-            modalWorkoutNotes.textContent =
-                workout.notes ||
-                "No notes available.";
+        let relationshipHTML = "";
+
+
+        if (
+            workout.programName ||
+            workout.planName
+        ) {
+
+            relationshipHTML = `
+
+                <div class="modal-workout-relationship">
+
+                    ${
+                        workout.programName
+                            ? `
+                                <div>
+                                    <span>
+                                        Program
+                                    </span>
+
+                                    <strong>
+                                        ${escapeHTML(
+                                            workout.programName
+                                        )}
+                                    </strong>
+                                </div>
+                            `
+                            : ""
+                    }
+
+
+                    ${
+                        workout.planName
+                            ? `
+                                <div>
+                                    <span>
+                                        Plan
+                                    </span>
+
+                                    <strong>
+                                        ${escapeHTML(
+                                            workout.planName
+                                        )}
+                                    </strong>
+                                </div>
+                            `
+                            : ""
+                    }
+
+                </div>
+            `;
         }
 
 
+        // Insert relationship information
+        // above exercise list
+        const existingRelationship =
+            workoutModal.querySelector(
+                ".modal-workout-relationship"
+            );
+
+
+        if (existingRelationship) {
+            existingRelationship.remove();
+        }
+
+
+        const modalInfo =
+            workoutModal.querySelector(
+                ".modal-info"
+            );
+
+
+        if (
+            modalInfo &&
+            relationshipHTML
+        ) {
+
+            modalInfo.insertAdjacentHTML(
+                "afterend",
+                relationshipHTML
+            );
+        }
+
+
+        // -----------------------------------------------
+        // EXERCISES
+        // -----------------------------------------------
+
         if (modalExerciseList) {
 
-            modalExerciseList.innerHTML =
-                "";
+            modalExerciseList.innerHTML = "";
 
 
             if (
-                !workout.exercises ||
-                !workout.exercises.length
+                !Array.isArray(
+                    workout.exercises
+                ) ||
+                workout.exercises.length === 0
             ) {
 
                 modalExerciseList.innerHTML = `
-                    <p class="text-muted">
-                        No exercises recorded.
+                    <p class="modal-empty">
+                        No exercise details available.
                     </p>
                 `;
 
             } else {
 
                 workout.exercises.forEach(
-                    exercise => {
+                    (exercise, index) => {
 
-                        const exerciseElement =
+                        const exerciseBlock =
                             document.createElement(
                                 "div"
                             );
 
 
-                        exerciseElement.className =
+                        exerciseBlock.className =
                             "modal-exercise";
 
 
                         let setsHTML = "";
 
 
-                        (exercise.sets || [])
-                            .forEach(
-                                set => {
+                        if (
+                            Array.isArray(
+                                exercise.sets
+                            ) &&
+                            exercise.sets.length
+                        ) {
 
-                                    setsHTML += `
-                                        <div class="modal-set">
+                            setsHTML =
+                                exercise.sets
+                                    .map(
+                                        set => {
 
-                                            <span>
-                                                Set ${
-                                                    Number(
-                                                        set.setNumber
-                                                    ) || 0
-                                                }
-                                            </span>
+                                            const weight =
+                                                Number(
+                                                    set.weight
+                                                ) || 0;
 
-                                            <strong>
-                                                ${
-                                                    Number(
-                                                        set.weight
-                                                    ) || 0
-                                                } kg
-                                            </strong>
+                                            const reps =
+                                                Number(
+                                                    set.reps
+                                                ) || 0;
 
-                                            <span>
-                                                ${
-                                                    Number(
-                                                        set.reps
-                                                    ) || 0
-                                                } reps
-                                            </span>
-
-                                            <span>
-                                                ${
-                                                    (
-                                                        (
-                                                            Number(
-                                                                set.weight
-                                                            ) || 0
-                                                        ) *
-                                                        (
-                                                            Number(
-                                                                set.reps
-                                                            ) || 0
-                                                        )
-                                                    ).toFixed(1)
-                                                } kg volume
-                                            </span>
-
-                                        </div>
-                                    `;
-
-                                }
-                            );
+                                            const volume =
+                                                weight *
+                                                reps;
 
 
-                        exerciseElement.innerHTML = `
+                                            return `
+                                                <div class="modal-set-row">
 
-                            <h4>
-                                ${escapeHTML(
-                                    exercise.name ||
-                                    "Exercise"
-                                )}
-                            </h4>
+                                                    <span>
+                                                        Set ${set.setNumber}
+                                                    </span>
+
+                                                    <span>
+                                                        ${weight}
+                                                        kg
+                                                    </span>
+
+                                                    <span>
+                                                        ${reps}
+                                                        reps
+                                                    </span>
+
+                                                    <span>
+                                                        ${volume.toFixed(1)}
+                                                        kg
+                                                    </span>
+
+                                                </div>
+                                            `;
+                                        }
+                                    )
+                                    .join("");
+
+                        } else {
+
+                            setsHTML = `
+                                <p class="modal-empty">
+                                    No sets recorded.
+                                </p>
+                            `;
+                        }
+
+
+                        exerciseBlock.innerHTML = `
+
+                            <div class="modal-exercise-header">
+
+                                <span>
+                                    ${String(
+                                        index + 1
+                                    ).padStart(
+                                        2,
+                                        "0"
+                                    )}
+                                </span>
+
+                                <h4>
+                                    ${escapeHTML(
+                                        exercise.name ||
+                                        "Exercise"
+                                    )}
+                                </h4>
+
+                            </div>
+
+
+                            <div class="modal-set-header">
+
+                                <span>
+                                    Set
+                                </span>
+
+                                <span>
+                                    Weight
+                                </span>
+
+                                <span>
+                                    Reps
+                                </span>
+
+                                <span>
+                                    Volume
+                                </span>
+
+                            </div>
+
 
                             <div class="modal-set-list">
 
                                 ${setsHTML}
 
                             </div>
-
                         `;
 
 
                         modalExerciseList.appendChild(
-                            exerciseElement
+                            exerciseBlock
                         );
 
                     }
                 );
             }
+        }
+
+
+        // -----------------------------------------------
+        // NOTES
+        // -----------------------------------------------
+
+        if (modalWorkoutNotes) {
+
+            modalWorkoutNotes.textContent =
+                workout.notes ||
+                "No notes available.";
         }
 
 
@@ -1055,7 +1012,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // =====================================================
-    // CLOSE MODAL
+    // CLOSE WORKOUT MODAL
     // =====================================================
 
     function closeModal() {
@@ -1066,31 +1023,50 @@ document.addEventListener("DOMContentLoaded", async () => {
             "hidden"
         );
 
-        selectedWorkoutId = null;
+        selectedWorkout =
+            null;
     }
 
 
-    if (closeWorkoutModal) {
+    // =====================================================
+    // HISTORY CARD EVENTS
+    // =====================================================
 
-        closeWorkoutModal.addEventListener(
-            "click",
-            closeModal
-        );
-    }
+    if (historyContainer) {
 
-
-    if (workoutModal) {
-
-        workoutModal.addEventListener(
+        historyContainer.addEventListener(
             "click",
             event => {
 
-                if (
-                    event.target ===
-                    workoutModal
-                ) {
+                const viewButton =
+                    event.target.closest(
+                        ".view-workout"
+                    );
 
-                    closeModal();
+
+                if (!viewButton) {
+                    return;
+                }
+
+
+                const workoutId =
+                    Number(
+                        viewButton.dataset.id
+                    );
+
+
+                const workout =
+                    workouts.find(
+                        item =>
+                            Number(item.id) ===
+                            workoutId
+                    );
+
+
+                if (workout) {
+                    openWorkoutModal(
+                        workout
+                    );
                 }
 
             }
@@ -1108,13 +1084,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             "click",
             async () => {
 
-                if (!selectedWorkoutId) {
+                if (!selectedWorkout) {
                     return;
                 }
 
 
                 const confirmed =
-                    confirm(
+                    window.confirm(
                         "Are you sure you want to delete this workout?"
                     );
 
@@ -1136,7 +1112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     const response =
                         await fetch(
-                            `/api/workouts/${selectedWorkoutId}`,
+                            `/api/workouts/${selectedWorkout.id}`,
                             {
                                 method: "DELETE",
 
@@ -1146,6 +1122,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 }
                             }
                         );
+
+
+                    const data =
+                        await response.json();
 
 
                     if (
@@ -1159,36 +1139,39 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
 
 
-                    const data =
-                        await response.json();
-
-
                     if (!response.ok) {
 
                         throw new Error(
                             data.message ||
-                            "Failed to delete workout"
+                            "Failed to delete workout."
                         );
                     }
 
 
-                    closeModal();
-
-
-                    // Remove deleted workout locally
                     workouts =
                         workouts.filter(
                             workout =>
                                 workout.id !==
-                                selectedWorkoutId
+                                selectedWorkout.id
                         );
 
 
-                    updateStatistics();
+                    populateExerciseFilter(
+                        workouts
+                    );
 
-                    populateExerciseFilter();
 
-                    filterWorkouts();
+                    updateStatistics(
+                        workouts
+                    );
+
+
+                    renderWorkouts(
+                        workouts
+                    );
+
+
+                    closeModal();
 
 
                 } catch (error) {
@@ -1201,7 +1184,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     alert(
                         error.message ||
-                        "Failed to delete workout."
+                        "Unable to delete workout."
                     );
 
 
@@ -1213,28 +1196,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                     deleteWorkoutButton.textContent =
                         "Delete Workout";
                 }
-
             }
         );
     }
 
 
     // =====================================================
-    // SEARCH
+    // FILTER EVENTS
     // =====================================================
 
-    if (searchInput) {
+    if (searchWorkout) {
 
-        searchInput.addEventListener(
+        searchWorkout.addEventListener(
             "input",
             filterWorkouts
         );
     }
 
-
-    // =====================================================
-    // DATE FILTER
-    // =====================================================
 
     if (filterDate) {
 
@@ -1245,10 +1223,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // =====================================================
-    // EXERCISE FILTER
-    // =====================================================
-
     if (filterExercise) {
 
         filterExercise.addEventListener(
@@ -1258,54 +1232,76 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    // =====================================================
-    // CLEAR FILTERS
-    // =====================================================
-
     if (clearFiltersButton) {
 
         clearFiltersButton.addEventListener(
             "click",
             () => {
 
-                if (searchInput) {
-                    searchInput.value = "";
+                if (searchWorkout) {
+                    searchWorkout.value = "";
                 }
-
 
                 if (filterDate) {
                     filterDate.value = "";
                 }
 
-
                 if (filterExercise) {
                     filterExercise.value = "";
                 }
 
-
-                renderWorkouts(
-                    workouts
-                );
-
+                filterWorkouts();
             }
         );
     }
 
 
     // =====================================================
-    // ESCAPE HTML
+    // MODAL CLOSE EVENTS
     // =====================================================
 
-    function escapeHTML(value) {
+    if (closeWorkoutModal) {
 
-        const div =
-            document.createElement("div");
-
-        div.textContent =
-            value ?? "";
-
-        return div.innerHTML;
+        closeWorkoutModal.addEventListener(
+            "click",
+            closeModal
+        );
     }
+
+
+    if (workoutModal) {
+
+        workoutModal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    workoutModal
+                ) {
+                    closeModal();
+                }
+            }
+        );
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Escape" &&
+                workoutModal &&
+                !workoutModal.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                closeModal();
+            }
+        }
+    );
 
 
     // =====================================================

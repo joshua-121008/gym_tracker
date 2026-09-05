@@ -2,9 +2,6 @@ const TOKEN_KEY = "gymToken";
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    console.log("plans.js loaded");
-
-
     // ==============================
     // GET ELEMENTS
     // ==============================
@@ -36,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const message =
         document.getElementById("planMessage");
 
+    const programSelect =
+        document.getElementById("planProgram");
+
 
     // ==============================
     // CHECK LOGIN
@@ -46,11 +46,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!token) {
 
-        console.log("No login token found.");
-
         window.location.href = "login.html";
 
         return;
+    }
+
+
+    // ==============================
+    // AUTH HEADERS
+    // ==============================
+
+    function getHeaders() {
+
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        };
+
+    }
+
+
+    // ==============================
+    // LOGOUT / AUTH FAILURE
+    // ==============================
+
+    function handleAuthFailure() {
+
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem("gymCurrentUser");
+
+        window.location.href = "login.html";
+
     }
 
 
@@ -60,27 +86,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function openForm() {
 
-        console.log("Create Plan button clicked");
-
         if (!formSection) {
-
-            console.error(
-                "planFormSection not found"
-            );
-
             return;
         }
-
 
         formSection.classList.remove("hidden");
 
         formSection.style.display = "block";
 
-
         formSection.scrollIntoView({
             behavior: "smooth",
             block: "start"
         });
+
+        // Load programs when form opens
+        loadPrograms();
 
     }
 
@@ -100,10 +120,123 @@ document.addEventListener("DOMContentLoaded", function () {
             formSection.classList.add("hidden");
 
             formSection.style.display = "none";
+
         }
 
         if (message) {
+
             message.textContent = "";
+
+            message.className = "form-message";
+
+        }
+
+    }
+
+
+    // ==============================
+    // LOAD PROGRAMS
+    // ==============================
+
+    async function loadPrograms() {
+
+        if (!programSelect) {
+            return;
+        }
+
+        try {
+
+            programSelect.innerHTML = `
+                <option value="">
+                    No Program
+                </option>
+            `;
+
+
+            const response =
+                await fetch(
+                    "/api/programs",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Authorization":
+                                "Bearer " + token
+                        }
+                    }
+                );
+
+
+            if (
+                response.status === 401 ||
+                response.status === 403
+            ) {
+
+                handleAuthFailure();
+
+                return;
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to load programs."
+                );
+
+            }
+
+
+            const programs =
+                Array.isArray(data)
+                    ? data
+                    : data.programs || [];
+
+
+            if (programs.length === 0) {
+
+                programSelect.innerHTML = `
+                    <option value="">
+                        No Program
+                    </option>
+                `;
+
+                return;
+            }
+
+
+            programs.forEach(function (program) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = program.id;
+
+                option.textContent =
+                    program.name;
+
+                programSelect.appendChild(option);
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Load programs error:",
+                error
+            );
+
+            programSelect.innerHTML = `
+                <option value="">
+                    No Program
+                </option>
+            `;
+
         }
 
     }
@@ -118,12 +251,6 @@ document.addEventListener("DOMContentLoaded", function () {
         createButton.addEventListener(
             "click",
             openForm
-        );
-
-    } else {
-
-        console.error(
-            "createPlanButton not found"
         );
 
     }
@@ -186,12 +313,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 response.status === 403
             ) {
 
-                localStorage.removeItem(
-                    TOKEN_KEY
-                );
-
-                window.location.href =
-                    "login.html";
+                handleAuthFailure();
 
                 return;
             }
@@ -212,7 +334,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             const plans =
-                data.plans || data || [];
+                Array.isArray(data)
+                    ? data
+                    : data.plans || [];
 
 
             renderPlans(plans);
@@ -229,6 +353,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 message.textContent =
                     "Unable to load plans.";
+
+                message.className =
+                    "form-message error";
 
             }
 
@@ -252,9 +379,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             planCount.textContent =
                 plans.length +
-                (plans.length === 1
-                    ? " Plan"
-                    : " Plans");
+                (
+                    plans.length === 1
+                        ? " Plan"
+                        : " Plans"
+                );
 
         }
 
@@ -264,7 +393,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        // ==============================
         // NO PLANS
+        // ==============================
+
         if (plans.length === 0) {
 
             plansContainer.innerHTML = `
@@ -320,7 +452,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
+        // ==============================
         // PLANS EXIST
+        // ==============================
+
         plansContainer.innerHTML =
             plans.map(function (plan) {
 
@@ -330,11 +465,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <div class="plan-card-header">
 
-                            <h3>
-                                ${escapeHTML(
-                                    plan.name
-                                )}
-                            </h3>
+                            <div>
+
+                                <h3>
+                                    ${escapeHTML(
+                                        plan.name
+                                    )}
+                                </h3>
+
+                                ${
+                                    plan.program_name
+                                        ? `
+                                            <span class="plan-program">
+                                                ${escapeHTML(
+                                                    plan.program_name
+                                                )}
+                                            </span>
+                                          `
+                                        : ""
+                                }
+
+                            </div>
+
 
                             <button
                                 type="button"
@@ -346,12 +498,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         </div>
 
+
                         <p>
                             ${escapeHTML(
                                 plan.description ||
                                 "No description"
                             )}
                         </p>
+
 
                         <p>
 
@@ -373,7 +527,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }).join("");
 
 
+        // ==============================
         // DELETE BUTTONS
+        // ==============================
+
         document
             .querySelectorAll(".delete-plan")
             .forEach(function (button) {
@@ -451,12 +608,25 @@ document.addEventListener("DOMContentLoaded", function () {
                         .value;
 
 
+                const programId =
+                    programSelect
+                        ? programSelect.value
+                        : "";
+
+
+                // ==============================
+                // VALIDATION
+                // ==============================
+
                 if (!name) {
 
                     if (message) {
 
                         message.textContent =
                             "Please enter a plan name.";
+
+                        message.className =
+                            "form-message error";
 
                     }
 
@@ -471,6 +641,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         message.textContent =
                             "Saving plan...";
 
+                        message.className =
+                            "form-message";
+
                     }
 
 
@@ -480,15 +653,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             {
                                 method: "POST",
 
-                                headers: {
-
-                                    "Content-Type":
-                                        "application/json",
-
-                                    "Authorization":
-                                        "Bearer " + token
-
-                                },
+                                headers: getHeaders(),
 
                                 body: JSON.stringify({
 
@@ -499,7 +664,12 @@ document.addEventListener("DOMContentLoaded", function () {
                                         description || null,
 
                                     goal:
-                                        goal || null
+                                        goal || null,
+
+                                    programId:
+                                        programId
+                                            ? Number(programId)
+                                            : null
 
                                 })
 
@@ -512,12 +682,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         response.status === 403
                     ) {
 
-                        localStorage.removeItem(
-                            TOKEN_KEY
-                        );
-
-                        window.location.href =
-                            "login.html";
+                        handleAuthFailure();
 
                         return;
                     }
@@ -537,22 +702,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
 
-                    console.log(
-                        "Plan created:",
-                        data
-                    );
-
-
-                    closeForm();
-
+                    // ==============================
+                    // SUCCESS
+                    // ==============================
 
                     if (message) {
 
                         message.textContent =
                             "Plan created successfully.";
 
+                        message.className =
+                            "form-message success";
+
                     }
 
+
+                    closeForm();
 
                     await loadPlans();
 
@@ -568,6 +733,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         message.textContent =
                             error.message;
+
+                        message.className =
+                            "form-message error";
 
                     }
 
@@ -617,12 +785,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 response.status === 403
             ) {
 
-                localStorage.removeItem(
-                    TOKEN_KEY
-                );
-
-                window.location.href =
-                    "login.html";
+                handleAuthFailure();
 
                 return;
             }

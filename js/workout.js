@@ -31,10 +31,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const message = document.querySelector("#workoutMessage");
     const planSelect = document.querySelector("#workoutPlan");
     const dateInput = document.querySelector("#workoutDate");
+
     const addExerciseButton =
         document.querySelector("#addExerciseButton");
+
     const logoutButton =
         document.querySelector("#logoutButton");
+
     const saveButton =
         document.querySelector("#saveWorkoutButton");
 
@@ -44,6 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // =====================================================
 
     function logout() {
+
         localStorage.removeItem("gymToken");
         localStorage.removeItem("gymCurrentUser");
 
@@ -60,6 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // =====================================================
 
     if (dateInput && !dateInput.value) {
+
         dateInput.value =
             new Date().toISOString().split("T")[0];
     }
@@ -101,6 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
 
 
+            // Authentication failure
             if (
                 response.status === 401 ||
                 response.status === 403
@@ -111,7 +117,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
             if (!response.ok) {
-                throw new Error("Failed to load workout plans");
+                throw new Error(
+                    "Failed to load workout plans"
+                );
             }
 
 
@@ -366,6 +374,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ".exercise-number"
                     );
 
+
                 if (numberElement) {
 
                     numberElement.textContent =
@@ -388,7 +397,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 ".set-number"
                             );
 
+
                         if (setNumber) {
+
                             setNumber.textContent =
                                 setIndex + 1;
                         }
@@ -718,7 +729,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     updateNumbers();
 
-
                     return;
                 }
 
@@ -768,11 +778,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     row.remove();
 
-
                     updateExerciseVolume(card);
 
                     updateNumbers();
-
 
                     return;
                 }
@@ -875,6 +883,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     showMessage(
                         "Please select a workout date."
+                    );
+
+                    return;
+                }
+
+
+                // -----------------------------------------
+                // VALIDATE PLAN
+                // -----------------------------------------
+
+                if (
+                    planSelect &&
+                    planSelect.options.length > 1 &&
+                    !planId
+                ) {
+
+                    showMessage(
+                        "Please select a workout plan."
                     );
 
                     return;
@@ -1061,7 +1087,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                                         workoutDate,
 
                                     planId:
-                                        planId || null,
+                                        planId
+                                            ? Number(planId)
+                                            : null,
 
                                     notes:
                                         notes || null,
@@ -1076,9 +1104,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                     let data = {};
 
                     try {
+
                         data =
                             await response.json();
+
                     } catch (error) {
+
                         data = {};
                     }
 
@@ -1174,9 +1205,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await loadPlans();
 
-
     updateNumbers();
-
 
     updateAllExerciseVolumes();
 

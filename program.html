@@ -1,19 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Gym | Programs</title>
+    <title>GYM | Training Programs</title>
 
-    <!-- Main CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Navigation -->
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
     <header class="navbar">
 
         <div class="logo">
@@ -21,13 +26,37 @@
         </div>
 
         <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="plans.html">Workout Plans</a>
-            <a href="program.html" class="active">Programs</a>
-            <a href="workout.html">Log Workout</a>
-            <a href="history.html">History</a>
-            <a href="progress.html">Progress</a>
-            <a href="profile.html">Profile</a>
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="plans.html">
+                Workout Plans
+            </a>
+
+            <a
+                href="program.html"
+                class="active"
+            >
+                Programs
+            </a>
+
+            <a href="workout.html">
+                Log Workout
+            </a>
+
+            <a href="history.html">
+                History
+            </a>
+
+            <a href="progress.html">
+                Progress
+            </a>
+
+            <a href="profile.html">
+                Profile
+            </a>
 
             <button
                 id="logoutButton"
@@ -36,51 +65,147 @@
             >
                 Logout
             </button>
+
         </nav>
 
     </header>
 
 
-    <!-- Main Content -->
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
     <main class="program-page">
 
-        <!-- Page Header -->
-        <section class="page-header">
+        <!-- HERO -->
 
-            <div>
-                <p class="page-label">TRAINING PROGRAMS</p>
+        <section class="program-hero">
 
-                <h1>Programs</h1>
+            <div class="program-hero-content">
+
+                <div class="program-hero-label">
+                    <span class="hero-dot"></span>
+                    TRAINING SYSTEM
+                </div>
+
+                <h1>
+                    Build your
+                    <span>training program.</span>
+                </h1>
 
                 <p>
-                    Build a structured training program and
-                    organize your workouts around your goals.
+                    Create structured programs, stay consistent,
+                    and organize your training around your goals.
                 </p>
+
             </div>
 
-            <button
-                id="createProgramButton"
-                class="btn primary-btn"
-                type="button"
-            >
-                + Create Program
-            </button>
+
+            <div class="program-hero-action">
+
+                <button
+                    id="createProgramButton"
+                    class="btn primary-btn program-create-btn"
+                    type="button"
+                >
+                    <span>+</span>
+                    Create Program
+                </button>
+
+            </div>
 
         </section>
 
 
-        <!-- Create Program Form -->
+        <!-- PROGRAM OVERVIEW -->
+
+        <section class="program-overview">
+
+            <div class="overview-card">
+
+                <div class="overview-icon">
+                    ◆
+                </div>
+
+                <div>
+                    <span>
+                        ACTIVE PROGRAMS
+                    </span>
+
+                    <strong id="programCount">
+                        0 Programs
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="overview-card">
+
+                <div class="overview-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <span>
+                        TRAINING FOCUS
+                    </span>
+
+                    <strong>
+                        Goal Driven
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="overview-card">
+
+                <div class="overview-icon">
+                    ↗
+                </div>
+
+                <div>
+                    <span>
+                        APPROACH
+                    </span>
+
+                    <strong>
+                        Consistency
+                    </strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CREATE PROGRAM FORM
+        ========================== -->
+
         <section
             id="programFormSection"
-            class="form-card hidden"
+            class="form-card program-form-card hidden"
         >
 
             <div class="card-header">
 
                 <div>
-                    <p class="card-label">NEW PROGRAM</p>
 
-                    <h2>Create Training Program</h2>
+                    <p class="card-label">
+                        NEW PROGRAM
+                    </p>
+
+                    <h2>
+                        Create Training Program
+                    </h2>
+
+                    <p class="form-description">
+                        Define your goal, training frequency,
+                        and program duration.
+                    </p>
+
                 </div>
 
                 <button
@@ -97,192 +222,204 @@
 
             <form id="programForm">
 
-                <!-- Program Name -->
-                <div class="form-group">
+                <div class="program-form-grid">
 
-                    <label for="programName">
-                        Program Name
-                    </label>
+                    <!-- Program Name -->
 
-                    <input
-                        type="text"
-                        id="programName"
-                        name="programName"
-                        placeholder="Example: 12 Week Strength Program"
-                        required
-                    >
+                    <div class="form-group program-full-width">
 
-                </div>
+                        <label for="programName">
+                            Program Name
+                        </label>
 
+                        <input
+                            type="text"
+                            id="programName"
+                            name="programName"
+                            placeholder="Example: 12 Week Strength Program"
+                            required
+                        >
 
-                <!-- Goal -->
-                <div class="form-group">
-
-                    <label for="programGoal">
-                        Training Goal
-                    </label>
-
-                    <select
-                        id="programGoal"
-                        name="programGoal"
-                        required
-                    >
-
-                        <option value="">
-                            Select your goal
-                        </option>
-
-                        <option value="strength">
-                            Strength
-                        </option>
-
-                        <option value="muscle">
-                            Muscle Building
-                        </option>
-
-                        <option value="weight_loss">
-                            Weight Loss
-                        </option>
-
-                        <option value="endurance">
-                            Endurance
-                        </option>
-
-                        <option value="fitness">
-                            General Fitness
-                        </option>
-
-                    </select>
-
-                </div>
+                    </div>
 
 
-                <!-- Duration -->
-                <div class="form-group">
+                    <!-- Goal -->
 
-                    <label for="programDuration">
-                        Duration
-                    </label>
+                    <div class="form-group">
 
-                    <select
-                        id="programDuration"
-                        name="programDuration"
-                        required
-                    >
+                        <label for="programGoal">
+                            Training Goal
+                        </label>
 
-                        <option value="">
-                            Select duration
-                        </option>
+                        <select
+                            id="programGoal"
+                            name="programGoal"
+                            required
+                        >
 
-                        <option value="4">
-                            4 Weeks
-                        </option>
+                            <option value="">
+                                Select your goal
+                            </option>
 
-                        <option value="6">
-                            6 Weeks
-                        </option>
+                            <option value="strength">
+                                Strength
+                            </option>
 
-                        <option value="8">
-                            8 Weeks
-                        </option>
+                            <option value="muscle">
+                                Muscle Building
+                            </option>
 
-                        <option value="12">
-                            12 Weeks
-                        </option>
+                            <option value="weight_loss">
+                                Weight Loss
+                            </option>
 
-                        <option value="16">
-                            16 Weeks
-                        </option>
+                            <option value="endurance">
+                                Endurance
+                            </option>
 
-                    </select>
+                            <option value="fitness">
+                                General Fitness
+                            </option>
 
-                </div>
+                        </select>
 
-
-                <!-- Days Per Week -->
-                <div class="form-group">
-
-                    <label for="daysPerWeek">
-                        Training Days Per Week
-                    </label>
-
-                    <select
-                        id="daysPerWeek"
-                        name="daysPerWeek"
-                        required
-                    >
-
-                        <option value="">
-                            Select days
-                        </option>
-
-                        <option value="2">
-                            2 Days
-                        </option>
-
-                        <option value="3">
-                            3 Days
-                        </option>
-
-                        <option value="4">
-                            4 Days
-                        </option>
-
-                        <option value="5">
-                            5 Days
-                        </option>
-
-                        <option value="6">
-                            6 Days
-                        </option>
-
-                    </select>
-
-                </div>
+                    </div>
 
 
-                <!-- Start Date -->
-                <div class="form-group">
+                    <!-- Duration -->
 
-                    <label for="programStartDate">
-                        Start Date
-                    </label>
+                    <div class="form-group">
 
-                    <input
-                        type="date"
-                        id="programStartDate"
-                        name="programStartDate"
-                        required
-                    >
+                        <label for="programDuration">
+                            Duration
+                        </label>
 
-                </div>
+                        <select
+                            id="programDuration"
+                            name="programDuration"
+                            required
+                        >
+
+                            <option value="">
+                                Select duration
+                            </option>
+
+                            <option value="4">
+                                4 Weeks
+                            </option>
+
+                            <option value="6">
+                                6 Weeks
+                            </option>
+
+                            <option value="8">
+                                8 Weeks
+                            </option>
+
+                            <option value="12">
+                                12 Weeks
+                            </option>
+
+                            <option value="16">
+                                16 Weeks
+                            </option>
+
+                        </select>
+
+                    </div>
 
 
-                <!-- Description -->
-                <div class="form-group">
+                    <!-- Days Per Week -->
 
-                    <label for="programDescription">
-                        Description
-                    </label>
+                    <div class="form-group">
 
-                    <textarea
-                        id="programDescription"
-                        name="programDescription"
-                        rows="4"
-                        placeholder="Describe your training program..."
-                    ></textarea>
+                        <label for="daysPerWeek">
+                            Training Days Per Week
+                        </label>
+
+                        <select
+                            id="daysPerWeek"
+                            name="daysPerWeek"
+                            required
+                        >
+
+                            <option value="">
+                                Select days
+                            </option>
+
+                            <option value="2">
+                                2 Days
+                            </option>
+
+                            <option value="3">
+                                3 Days
+                            </option>
+
+                            <option value="4">
+                                4 Days
+                            </option>
+
+                            <option value="5">
+                                5 Days
+                            </option>
+
+                            <option value="6">
+                                6 Days
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Start Date -->
+
+                    <div class="form-group">
+
+                        <label for="programStartDate">
+                            Start Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="programStartDate"
+                            name="programStartDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Description -->
+
+                    <div class="form-group program-full-width">
+
+                        <label for="programDescription">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="programDescription"
+                            name="programDescription"
+                            rows="4"
+                            placeholder="Describe your training program..."
+                        ></textarea>
+
+                    </div>
 
                 </div>
 
 
                 <!-- Message -->
+
                 <p
                     id="programMessage"
                     class="form-message"
                 ></p>
 
 
-                <!-- Form Actions -->
+                <!-- Actions -->
+
                 <div class="form-actions">
 
                     <button
@@ -307,48 +444,61 @@
         </section>
 
 
-        <!-- Programs -->
+        <!-- =========================
+             PROGRAM LIST
+        ========================== -->
+
         <section class="programs-section">
 
             <div class="section-heading">
 
                 <div>
+
                     <p class="section-label">
-                        YOUR PROGRAMS
+                        YOUR TRAINING
                     </p>
 
-                    <h2>My Training Programs</h2>
-                </div>
+                    <h2>
+                        My Programs
+                    </h2>
 
-                <span id="programCount">
-                    0 Programs
-                </span>
+                    <p class="section-description">
+                        Your personalized training programs
+                        are stored securely with your account.
+                    </p>
+
+                </div>
 
             </div>
 
 
             <!-- Program Cards -->
+
             <div
                 id="programsContainer"
                 class="programs-grid"
             >
 
-                <!-- Programs will be loaded by program.js -->
-
                 <div
                     id="emptyPrograms"
-                    class="empty-state"
+                    class="empty-state program-empty-state"
                 >
 
-                    <div class="empty-icon">
+                    <div class="empty-program-icon">
                         +
                     </div>
 
-                    <h3>No programs yet</h3>
+                    <p class="empty-label">
+                        NO PROGRAMS
+                    </p>
+
+                    <h3>
+                        Start your training journey
+                    </h3>
 
                     <p>
-                        Create a training program to organize
-                        your workouts and reach your goals.
+                        Create your first structured program
+                        and start training with purpose.
                     </p>
 
                     <button
@@ -366,25 +516,87 @@
         </section>
 
 
-        <!-- Program Information -->
-        <section class="info-card">
+        <!-- =========================
+             BOTTOM INFORMATION
+        ========================== -->
 
-            <div class="info-content">
+        <section class="program-info-section">
+
+            <div class="program-info-content">
 
                 <p class="card-label">
                     TRAIN WITH PURPOSE
                 </p>
 
                 <h2>
-                    Follow a plan.
-                    <span>Build consistency.</span>
+                    Structure creates
+                    <span>consistency.</span>
                 </h2>
 
                 <p>
-                    Create structured programs around your fitness
-                    goals and track your workouts throughout the
-                    entire program.
+                    A structured training program gives every
+                    workout a purpose. Define your goal,
+                    establish your schedule, and track your
+                    progress over time.
                 </p>
+
+            </div>
+
+
+            <div class="program-info-points">
+
+                <div class="program-info-point">
+
+                    <span>01</span>
+
+                    <div>
+                        <strong>
+                            Define your goal
+                        </strong>
+
+                        <p>
+                            Strength, muscle, endurance,
+                            or general fitness.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="program-info-point">
+
+                    <span>02</span>
+
+                    <div>
+                        <strong>
+                            Build consistency
+                        </strong>
+
+                        <p>
+                            Follow a predictable training
+                            schedule every week.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="program-info-point">
+
+                    <span>03</span>
+
+                    <div>
+                        <strong>
+                            Track progress
+                        </strong>
+
+                        <p>
+                            Use your workout history and
+                            progress tools to improve.
+                        </p>
+                    </div>
+
+                </div>
 
             </div>
 
@@ -393,7 +605,10 @@
     </main>
 
 
-    <!-- Footer -->
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
     <footer>
 
         <p>
@@ -403,9 +618,11 @@
     </footer>
 
 
-    <!-- Programs JavaScript -->
-   <script src="js/program.js"></script>
+    <!-- JavaScript -->
+
+    <script src="js/program.js"></script>
 
 </body>
+
 </html>
 

@@ -14,50 +14,131 @@ const profileRoutes = require("./routes/profileRoutes");
 
 const app = express();
 
-// Middleware
+// ==========================================
+// MIDDLEWARE
+// ==========================================
+
 app.use(cors());
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Serve frontend files
-app.use(express.static(path.join(__dirname, "..")));
+app.use(express.urlencoded({
+    extended: true
+}));
 
-// API routes
-app.use("/api/auth", authRoutes);
-app.use("/api/plans", planRoutes);
-app.use("/api/programs", programRoutes);
-app.use("/api/workouts", workoutRoutes);
-app.use("/api/profile", profileRoutes);
 
-// API test route
+// ==========================================
+// SERVE FRONTEND
+// ==========================================
+
+app.use(
+    express.static(
+        path.join(__dirname, "..")
+    )
+);
+
+
+// ==========================================
+// API ROUTES
+// ==========================================
+
+app.use(
+    "/api/auth",
+    authRoutes
+);
+
+app.use(
+    "/api/plans",
+    planRoutes
+);
+
+app.use(
+    "/api/programs",
+    programRoutes
+);
+
+app.use(
+    "/api/workouts",
+    workoutRoutes
+);
+
+app.use(
+    "/api/profile",
+    profileRoutes
+);
+
+
+// ==========================================
+// API TEST
+// ==========================================
+
 app.get("/api", (req, res) => {
+
     res.json({
         message: "Gym Tracker API is running"
     });
+
 });
 
-// Database test route
+
+// ==========================================
+// DATABASE TEST
+// ==========================================
+
 app.get("/api/db-test", async (req, res) => {
+
     try {
-        const result = await pool.query("SELECT NOW()");
+
+        const result = await pool.query(
+            "SELECT NOW()"
+        );
 
         res.json({
-            message: "PostgreSQL connection successful",
-            time: result.rows[0].now
+            message:
+                "PostgreSQL connection successful",
+
+            time:
+                result.rows[0].now
         });
+
     } catch (error) {
-        console.error("Database error:", error);
+
+        console.error(
+            "Database error:",
+            error
+        );
 
         res.status(500).json({
-            message: "PostgreSQL connection failed",
-            error: error.message
+
+            message:
+                "PostgreSQL connection failed",
+
+            error:
+                error.message
+
         });
+
     }
+
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`Gym server running at http://localhost:${PORT}`);
-});
+// ==========================================
+// START SERVER
+// ==========================================
+
+const PORT =
+    process.env.PORT || 5000;
+
+
+app.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
+
+        console.log(
+            `Gym server running on port ${PORT}`
+        );
+
+    }
+);

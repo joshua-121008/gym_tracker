@@ -4,6 +4,7 @@ const authenticateToken = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+
 // =========================
 // GET ALL WORKOUTS FOR USER
 // =========================
@@ -11,30 +12,55 @@ router.get("/", authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT
-                w.id AS workout_id,
-                w.workout_name,
-                w.workout_date,
-                w.notes,
-                e.id AS exercise_id,
-                e.exercise_name,
-                s.id AS set_id,
-                s.set_number,
-                s.weight,
-                s.reps
-             FROM workouts w
-             LEFT JOIN exercises e
-                ON w.id = e.workout_id
-             LEFT JOIN sets s
-                ON e.id = s.exercise_id
-             WHERE w.user_id = $1
-             ORDER BY w.workout_date DESC, w.id DESC,
-                      e.id ASC, s.set_number ASC`,
+    w.id AS workout_id,
+    w.workout_name,
+    w.workout_date,
+    w.notes,
+
+    p.id AS plan_id,
+    p.name AS plan_name,
+
+    pr.id AS program_id,
+    pr.name AS program_name,
+
+    e.id AS exercise_id,
+    e.exercise_name,
+
+    s.id AS set_id,
+    s.set_number,
+    s.weight,
+    s.reps
+
+ FROM workouts w
+
+ LEFT JOIN plans p
+    ON w.plan_id = p.id
+    AND p.user_id = w.user_id
+
+ LEFT JOIN programs pr
+    ON p.program_id = pr.id
+    AND pr.user_id = w.user_id
+
+ LEFT JOIN exercises e
+    ON w.id = e.workout_id
+
+ LEFT JOIN sets s
+    ON e.id = s.exercise_id
+
+ WHERE w.user_id = $1
+
+ ORDER BY
+    w.workout_date DESC,
+    w.id DESC,
+    e.id ASC,
+    s.set_number ASC`
             [req.user.id]
         );
 
         const workouts = {};
 
         result.rows.forEach(row => {
+
             if (!workouts[row.workout_id]) {
                 workouts[row.workout_id] = {
                     id: row.workout_id,
@@ -46,6 +72,7 @@ router.get("/", authenticateToken, async (req, res) => {
             }
 
             if (row.exercise_id) {
+
                 let exercise = workouts[row.workout_id].exercises
                     .find(e => e.id === row.exercise_id);
 
@@ -73,6 +100,7 @@ router.get("/", authenticateToken, async (req, res) => {
         res.json(Object.values(workouts));
 
     } catch (error) {
+
         console.error("Get workouts error:", error);
 
         res.status(500).json({
@@ -86,9 +114,11 @@ router.get("/", authenticateToken, async (req, res) => {
 // CREATE WORKOUT
 // =========================
 router.post("/", authenticateToken, async (req, res) => {
+
     const client = await pool.connect();
 
     try {
+
         const {
             workoutName,
             workoutDate,
@@ -97,15 +127,61 @@ router.post("/", authenticateToken, async (req, res) => {
             exercises
         } = req.body;
 
-        if (!workoutName || !workoutDate) {
+
+        // -------------------------
+        // BASIC VALIDATION
+        // -------------------------
+
+        if (!workoutName || !workoutName.trim()) {
             return res.status(400).json({
-                message: "Workout name and date are required"
+                message: "Workout name is required"
             });
         }
 
+        if (!workoutDate) {
+            return res.status(400).json({
+                message: "Workout date is required"
+            });
+        }
+
+
+        // -------------------------
+        // CHECK PLAN OWNERSHIP
+        // -------------------------
+
+        if (planId) {
+
+            const planCheck = await client.query(
+                `SELECT id
+                 FROM plans
+                 WHERE id = $1
+                 AND user_id = $2`,
+                [
+                    planId,
+                    req.user.id
+                ]
+            );
+
+            if (planCheck.rows.length === 0) {
+
+                return res.status(404).json({
+                    message: "Selected workout plan was not found"
+                });
+            }
+        }
+
+
+        // -------------------------
+        // START TRANSACTION
+        // -------------------------
+
         await client.query("BEGIN");
 
-        // Create workout
+
+        // -------------------------
+        // CREATE WORKOUT
+        // -------------------------
+
         const workoutResult = await client.query(
             `INSERT INTO workouts
             (
@@ -120,39 +196,76 @@ router.post("/", authenticateToken, async (req, res) => {
             [
                 req.user.id,
                 planId || null,
-                workoutName,
+                workoutName.trim(),
                 workoutDate,
-                notes || null
+                notes ? notes.trim() : null
             ]
         );
 
         const workout = workoutResult.rows[0];
 
-        // Create exercises and sets
+
+        // -------------------------
+        // CREATE EXERCISES + SETS
+        // -------------------------
+
         if (Array.isArray(exercises)) {
+
             for (const exercise of exercises) {
 
-                if (!exercise.name) {
+                if (!exercise.name || !exercise.name.trim()) {
                     continue;
                 }
 
                 const exerciseResult = await client.query(
                     `INSERT INTO exercises
-                    (workout_id, exercise_name)
+                    (
+                        workout_id,
+                        exercise_name
+                    )
                     VALUES ($1, $2)
                     RETURNING *`,
                     [
                         workout.id,
-                        exercise.name
+                        exercise.name.trim()
                     ]
                 );
 
                 const exerciseRow = exerciseResult.rows[0];
 
+
                 if (Array.isArray(exercise.sets)) {
-                    for (let i = 0; i < exercise.sets.length; i++) {
+
+                    for (
+                        let i = 0;
+                        i < exercise.sets.length;
+                        i++
+                    ) {
 
                         const set = exercise.sets[i];
+
+
+                        // Ignore invalid sets
+                        if (
+                            set.reps === undefined ||
+                            set.reps === null ||
+                            set.reps === ""
+                        ) {
+                            continue;
+                        }
+
+
+                        const weight =
+                            Number(set.weight) || 0;
+
+                        const reps =
+                            Number(set.reps);
+
+
+                        if (reps <= 0) {
+                            continue;
+                        }
+
 
                         await client.query(
                             `INSERT INTO sets
@@ -166,8 +279,8 @@ router.post("/", authenticateToken, async (req, res) => {
                             [
                                 exerciseRow.id,
                                 i + 1,
-                                set.weight || 0,
-                                set.reps
+                                weight,
+                                reps
                             ]
                         );
                     }
@@ -175,24 +288,35 @@ router.post("/", authenticateToken, async (req, res) => {
             }
         }
 
+
+        // -------------------------
+        // COMMIT
+        // -------------------------
+
         await client.query("COMMIT");
+
 
         res.status(201).json({
             message: "Workout saved successfully",
             workout
         });
 
+
     } catch (error) {
 
         await client.query("ROLLBACK");
 
-        console.error("Create workout error:", error);
+        console.error(
+            "Create workout error:",
+            error
+        );
 
         res.status(500).json({
             message: "Server error while saving workout"
         });
 
     } finally {
+
         client.release();
     }
 });
@@ -202,10 +326,13 @@ router.post("/", authenticateToken, async (req, res) => {
 // DELETE WORKOUT
 // =========================
 router.delete("/:id", authenticateToken, async (req, res) => {
+
     try {
+
         const result = await pool.query(
             `DELETE FROM workouts
-             WHERE id = $1 AND user_id = $2
+             WHERE id = $1
+             AND user_id = $2
              RETURNING id`,
             [
                 req.params.id,
@@ -213,23 +340,32 @@ router.delete("/:id", authenticateToken, async (req, res) => {
             ]
         );
 
+
         if (result.rows.length === 0) {
+
             return res.status(404).json({
                 message: "Workout not found"
             });
         }
 
+
         res.json({
             message: "Workout deleted successfully"
         });
 
+
     } catch (error) {
-        console.error("Delete workout error:", error);
+
+        console.error(
+            "Delete workout error:",
+            error
+        );
 
         res.status(500).json({
             message: "Server error while deleting workout"
         });
     }
 });
+
 
 module.exports = router;
